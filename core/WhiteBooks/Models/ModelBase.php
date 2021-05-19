@@ -79,7 +79,7 @@ abstract class ModelBase{
 
     public function getFactory(){
         if ($this->factory === null){
-            $name = basename(igk_io_dir(get_class($this)));
+            $name = basename(ilm_io_dir(get_class($this)));
             $this->factory = $this->getController()::ns("Database\\Factories\\".$name."Factory");
         }
         return $this->factory;
@@ -107,10 +107,10 @@ abstract class ModelBase{
 
     public function __construct($raw=null)
     {
-        $this->raw = igk_db_create_row($this->getTable());
+        $this->raw = ilm_db_create_row($this->table);
         if (!$this->raw ){
             die("failed to create db row: ".$this->getTable());
-        }
+        } 
         if ($raw){
             foreach($raw as $k=>$v){
                 if (property_exists($this->raw, $k)){
@@ -130,7 +130,7 @@ abstract class ModelBase{
         if (method_exists($this, $m = "get".$name )){
 			return $this->$m();
 		}        
-        return igk_getv($this->raw, $name);
+        return ilm_getv($this->raw, $name);
     }
 
     public function offsetExists($offset) { }
@@ -158,11 +158,17 @@ abstract class ModelBase{
         $ctrl = $this->getController();
         return Utility::GetTableName($this->table, $ctrl); 
     }
+    public function getTableInfo(){
+        if ($s = ilm_getv(ilm_get_db_config(), $this->table)){
+            return $s->ColumnInfo;
+        }
+        return null; 
+    }
     public function getController(){
-        return igk_getctrl($this->controller, false);
+        return ilm_getctrl($this->controller, false);
     }
     public function getDataAdapter(){
-        return igk_environment()->getClassInstance(ILYEUM\wp\database\driver::class);
+        return ilm_environment()->getClassInstance(\ILYEUM\wp\database\driver::class);
     }
 
     /**
@@ -189,11 +195,12 @@ abstract class ModelBase{
             //
             self::$macros = [
                 "create"=>function($raw=null){                     
-                    $c= new static($raw); 
-                    if ($c->raw){
-                        if ($g = $c->insert($c->raw)){
-                            $c->raw = $g->raw;;
+                    $c= new static($raw);   
+                    if ($c->raw){ 
+                        if ($g = $c->insert($c->raw)){                                                          
+                            $c->raw = $g->raw;
                         }else{
+                            igk_wln("failed to create");
                             return null;
                         }
                     }
@@ -207,11 +214,11 @@ abstract class ModelBase{
                     if (__CLASS__ == static::class){
                         self::$macros[$name] = $callback;     
                     }else { 
-                        self::$macros[igk_ns_name(static::class."/".$name)] = $callback; 
+                        self::$macros[ilm_ns_name(static::class."/".$name)] = $callback; 
                     }
                 },
                 "unregisterMacro"=>function($name){
-                    unset(self::$macros[igk_ns_name(static::class."/".$name)]);
+                    unset(self::$macros[ilm_ns_name(static::class."/".$name)]);
                 },
                 "registerExtension"=>function($classname){  
                     
@@ -226,24 +233,26 @@ abstract class ModelBase{
                     return array_keys(self::$macros);
                 },
                 "getInstance"=>function($name){
-                    return igk_environment()->createClassInstance(static::class);
+                    return ilm_environment()->createClassInstance(static::class);
                 }
             ];
             // register call extension
-            $f = new ReflectionClass(ModelEntryExtension::class);
-            foreach($f->getMethods() as $k){
-                if ($k->isStatic()){
-                    self::$macros[$k->getName()] = [ModelEntryExtension::class, $k->getName()];
-                }
-            } 
+            if (class_exists(ModelEntryExtension::class)){
+                $f = new ReflectionClass(ModelEntryExtension::class);
+                foreach($f->getMethods() as $k){
+                    if ($k->isStatic()){
+                        self::$macros[$k->getName()] = [ModelEntryExtension::class, $k->getName()];
+                    }
+                } 
+            }
             if (file_exists($file = __DIR__."/DefaultModelEntryExtensions.pinc")){
                 require_once($file);
             }
         } 
-        $_instance_class = igk_environment()->createClassInstance(static::class);
+        $_instance_class = ilm_environment()->getClassInstance(static::class);
         $_instance_class->is_mock = 1;
 
-        if ($fc = igk_getv(self::$macros, $name)){
+        if ($fc = ilm_getv(self::$macros, $name)){
             $bind = 1;
             if (is_array($fc)){
 
@@ -253,12 +262,12 @@ abstract class ModelBase{
             if ($bind && (static::class !== __CLASS__)){
                 $fc = Closure::bind($fc, null, static::class); 
                 if (!$fc){
-                    igk_die("Can't bind : ", $name);
+                    ilm_die("Can't bind : ", $name);
                 }
             }            
             return $fc(...$arguments);
         } 
-        if ($fc = igk_getv(self::$macros, igk_ns_name(static::class."/".$name))){
+        if ($fc = ilm_getv(self::$macros, ilm_ns_name(static::class."/".$name))){
             $fc = $fc->bindTo($_instance_class);
             return $fc(...$arguments);
         }
@@ -269,7 +278,7 @@ abstract class ModelBase{
         if (method_exists($c, $name)){
             return $c->$name(...$arguments);
         }
-        igk_wln(array_keys(self::$macros));
+        ilm_wln(array_keys(self::$macros));
         die("ModelBase: failed to call [".$name."]");
     }
 
@@ -287,12 +296,12 @@ abstract class ModelBase{
         if ($regInvoke === null){
             $regInvoke = 1;
         }
-        if ($fc = igk_getv(self::$macros, igk_ns_name(static::class."/".$name))){
+        if ($fc = ilm_getv(self::$macros, ilm_ns_name(static::class."/".$name))){
             $fc = $fc->bindTo($this); 
             return $fc(...$arguments);
         } 
         
-        if ($fc = igk_getv(self::$macros, $name)){
+        if ($fc = ilm_getv(self::$macros, $name)){
             if (is_callable($fc)){
                 $fc = Closure::fromCallable($fc);
             }
@@ -300,10 +309,10 @@ abstract class ModelBase{
             //$fc = $fc->bindTo($this); 
             return $fc(...$arguments);
         }   
-        if (igk_environment()->is("DEV")){
-            igk_trace();
-            igk_wln_e("failed to call ", $name );
-        }
+       //  if (ilm_environment()->is("DEV")){
+            ilm_trace();
+            ilm_wln_e("failed to call ", $name );
+        // }
     }
 
     /**
@@ -329,5 +338,39 @@ abstract class ModelBase{
         $pkey = $this->primaryKey;
         $r = $this->getDataAdapter()->update($this->getTable(), $this->raw, [$this->primaryKey=>$this->$pkey]);    
         return $r && $r->success(); 
+    }
+
+    /**
+     * retrieve all registrated model
+     * @return array
+     */
+    public static function GetModels(){
+        $dir = dirname(__FILE__);
+        $hdir = opendir($dir);
+        $tab = [];
+        $main_cl = static::class;
+        $ns = str_replace('/', '\\', dirname(str_replace("\\", "/", $main_cl)));
+
+        while($c = readdir($hdir)){
+            if (($c == "..") || ($c==".")){
+                continue;
+            }
+            if (preg_match("/\.php$/", $c)){
+                $file = implode("/", [$dir, $c]);
+                if ($file==__FILE__){
+                    continue;
+                }
+                include_once($file); 
+                $name = substr($c, 0, -4);
+                $cl = $ns."\\".$name;
+                if (class_exists($cl) && is_subclass_of($cl, $main_cl)){
+                    $tab[] = $cl;
+                }
+            }
+        }
+
+        closedir($hdir);
+
+        return $tab;
     }
 }

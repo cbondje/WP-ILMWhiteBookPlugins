@@ -8,8 +8,8 @@ namespace ILYEUM;
 
 class Utility{
     public static function To_JSON($raw , $options=null){
-        $ignoreempty = igk_getv($options, "ignore_empty", 0);
-        $default_output = igk_getv($options, "default_ouput", "{}");
+        $ignoreempty = ilm_getv($options, "ignore_empty", 0);
+        $default_output = ilm_getv($options, "default_ouput", "{}");
         if(is_string($raw)){
             $sraw = json_decode($raw);
             if (json_last_error() === JSON_ERROR_NONE){
@@ -31,7 +31,8 @@ class Utility{
         }
         return json_encode($c);
     }
-    public static function GetTableName($table, $ctrl=null){        
-        return $table;
+    public static function GetTableName($table, $ctrl=null){    
+        $p = ilm_app()->configs->db_prefix;
+        return str_replace("%prefix%", $p, $table);
     }
 }

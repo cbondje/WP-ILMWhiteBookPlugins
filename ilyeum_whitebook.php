@@ -1,6 +1,6 @@
 <?php
 /*
-* Plugin Name: Ilyeum white book
+* Plugin Name: ILYEUM - White Book
 * Description: White book process plugins
 * Plugin URI: //ilyeum.com/plugins
 * Author: ilyeum.com , C.A.D. BONDJE DOUE
@@ -8,7 +8,12 @@
 * Author URI: //ilyeum.com
 */
 
-
-require_once(__DIR__."/core/app.php");
-
-ILYEUM\App::boot();
+if (file_exists($f = __DIR__."/core/App.php" ))
+{
+    // ---------------------------------------------
+    // | bootstrap core puglins
+    // ---------------------------------------------
+    require_once($f);
+    unset($f);
+    ILYEUM\App::boot(__FILE__);
+}

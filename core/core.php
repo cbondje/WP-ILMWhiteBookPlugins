@@ -1,32 +1,51 @@
 <?php
 
+use ILYEUM\ConfigHandler;
+use ILYEUM\wp\database\driver;
+
+define("ILM_BASE_DIR", dirname(__DIR__));
+define("ILM_WHITE_BOOK_DIR", __DIR__."/WhiteBooks");
+define("ILM_VERSION", "1.0");
+
 /**
  * 
  * @return mixed 
  */
-function igk_environment(){
+function ilm_environment(){
     return ILYEUM\Environment::getInstance();
 }
 
+function ilm_app(){
+    return ILYEUM\App::getInstance();
+}
+ 
+function ilm_getev($value, $default){
+if(($value == null) || empty($value)){
+    if(is_callable($default) && ($default instanceof Closure))
+        return $default();
+    return $default;
+}
+return $value;
+}
 /**
  * return string namespace presentation
  */
-function igk_ns_name($ns){
+function ilm_ns_name($ns){
     return str_replace("/", "\\", $ns);
 }
 
-function igk_die($msg){
+function ilm_die($msg){
     die($msg);
 }
-function igk_wln(){
+function ilm_wln(){
     ob_start();
     foreach(func_get_args() as $arg){
         print_r($arg);
     }
     echo ob_get_clean();
 }
-function igk_getv($array, $key, $default=null){
-    return igk_getpv($array, array($key), $default);
+function ilm_getv($array, $key, $default=null){
+    return ilm_getpv($array, array($key), $default);
 }
 
 ///<summary></summary>
@@ -39,7 +58,7 @@ function igk_getv($array, $key, $default=null){
 * @param mixed $key
 * @param mixed $default the default value is null
 */
-function igk_getpv($array, $key, $default=null){
+function ilm_getpv($array, $key, $default=null){
     $n=$key;
     if(!is_array($n)){
         $n=explode("/", $n);
@@ -48,7 +67,7 @@ function igk_getpv($array, $key, $default=null){
         return $default;
     }
     if($key === null){
-        igk_die(__FUNCTION__." key not defined");
+        ilm_die(__FUNCTION__." key not defined");
     } 
     $def=$default;
     $o=null;
@@ -81,8 +100,8 @@ function igk_getpv($array, $key, $default=null){
     }
     return $o;
 }
-function igk_getctrl(){
-    return igk_environment()->getClassInstance(ILYEUM\WhiteBooks\Controller::class);
+function ilm_getctrl(){
+    return ilm_environment()->getClassInstance(ILYEUM\WhiteBooks\Controller::class);
 }
 
 
@@ -92,31 +111,31 @@ function igk_getctrl(){
 * 
 * @param mixed $depth the default value is 0
 */
-function igk_trace($depth=0, $sep="", $count=-1, $header=0){
+function ilm_trace($depth=0, $sep="", $count=-1, $header=0){
     $callers=debug_backtrace();
     $o="";
     $tc=1; 
     for($i=$depth; $i < count($callers); $i++, $tc++){
         //+ show file before line to cmd+click to be handle
-        $f=igk_getv($callers[$i], "function");
-        $c=igk_getv($callers[$i], "class", "__global");
-        $o.= igk_getv($callers[$i], "file").":".igk_getv($callers[$i], "line") . PHP_EOL;
+        $f=ilm_getv($callers[$i], "function");
+        $c=ilm_getv($callers[$i], "class", "__global");
+        $o.= ilm_getv($callers[$i], "file").":".ilm_getv($callers[$i], "line") . PHP_EOL;
     } 
     echo $o; 
 }
 
-function igk_wln_e(){
-    igk_wln(...func_get_args());
-    igk_exit();
+function ilm_wln_e(){
+    ilm_wln(...func_get_args());
+    ilm_exit();
 }
-function igk_exit(){
+function ilm_exit(){
     exit;
 }
 ///<summary>get system directory presentation</summary>
 /**
 * get system directory presentation
 */
-function igk_io_dir($dir, $separator=DIRECTORY_SEPARATOR){
+function ilm_io_dir($dir, $separator=DIRECTORY_SEPARATOR){
     $d=$separator;
     $r='/';
     $out="";
@@ -131,6 +150,97 @@ function igk_io_dir($dir, $separator=DIRECTORY_SEPARATOR){
     }
     return $out;
 }
-function igk_db_create_row($table){
-    return (object)[];
+function ilm_db_create_row($table){
+    $raw = null;
+    $cf = ilm_get_db_config();
+    if ($tinfo = ilm_getv($cf, $table)){
+        $raw = (object)[];
+        foreach($tinfo->ColumnInfo as $t){
+            $raw->{$t->clName} = ilm_getv($t, "clDefault");
+        }
+    }
+    return $raw;
+}
+
+function ilm_resources_gets(){
+    return ilm_environment()->getClassInstance(\ILYEUM\Resources::class)->gets(...func_get_args());
+}
+function ilm_get_db_config(){
+    if ($db_config = ilm_environment()->get("db_config")){
+        return $db_config;
+    }
+    $r = ilm_app()->loadJsonConfig("data.json");
+    foreach($r as $t=>$k){
+        $r->$t->ColumnInfo = new ConfigHandler((array)$r->$t->ColumnInfo);
+    }  
+    ilm_environment()->set("db_config", $r);
+    return $r;    
+}
+function ilm_db_get_table_info($table){
+    return ilm_getv(ilm_get_db_config(), $table);
+}
+
+function ilm_get_robjs($list, $replace=0, $request=null){
+    return ilm_get_robj(is_string($list)? explode("|", $list): $list, $replace, $request);
+}
+
+
+///<summary>retreive requested object as object</summary>
+///<param name="callbackfilter">callable that will filter the request available key</param>
+/**
+* retreive requested object as object
+* @param mixed $closure callbackfilter callable that will filter the request available key
+*/
+function ilm_get_robj($callbackfilter=null, $replace=0, $request=null){
+    $t=array();
+    $m = $callbackfilter;
+    if($m === null){
+        $callbackfilter=function(& $k, $v, $rp){
+            $rgx="/^cl/i";
+            $p=preg_match($rgx, $k);
+            if($p && $rp)
+                $k=preg_replace($rgx, "", $k);
+            return $p;
+        };
+    }
+    else{
+        if(is_string($m)){
+            $callbackfilter=function(& $k, $v, $rp) use ($m){
+                $rgx="/".$m."/i";
+                $p=preg_match($rgx, $k);
+                if($p && $rp){
+                    $k=preg_replace($rgx, "", $k);
+                }
+                return $p;
+            }; 
+        }elseif (is_array($m)){
+            $t = array_fill_keys($m, null);
+            $callbackfilter = function (& $k, $v, $rp)use($m){
+                if (in_array($k, $m)){
+                    return true;
+                }
+                return false;
+            };
+        }
+    }
+    $request=$request ?? $_REQUEST;
+    foreach($request as $k=>$v){
+        if($callbackfilter($k, $v, $replace)){
+            $t[$k]=ilm_str_quotes($v);
+        }
+    }
+    return (object)$t;
+}
+function ilm_str_quotes($content){
+    if(ini_get("magic_quotes_gpc") && is_string($content)){
+        $content=stripcslashes($content);
+    }
+    return $content;
+}
+function ilm_db_create_options(){
+    return (object)[
+        "@callback"=>null,
+        "Sort"=>null,
+        "SortColumn"=>null
+    ];
 }

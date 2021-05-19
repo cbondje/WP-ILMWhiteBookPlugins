@@ -1,12 +1,32 @@
 <?php
 
-namespace ILYEUM; 
+namespace ILYEUM;
+
+use ILYEUM\wp\actions;
 
 require_once(__DIR__."/core.php");
 
 class App{
     private static $sm_instance;
-    public static function boot(){
+
+    var $config; 
+    var $plugins_file;
+
+    public static function getInstance(){
+        return self::$sm_instance;
+    }
+    public function loadJsonConfig($name){
+        if (file_exists($file = implode(DIRECTORY_SEPARATOR, [ILM_BASE_DIR, "configs/{$name}"]))){
+            return json_decode(file_get_contents($file));
+        }
+        return null;
+    }
+    /**
+     * boot plugins
+     * @return App 
+     * @throws TypeError 
+     */
+    public static function boot($file){
         spl_autoload_register(function($n){           
             $f = str_replace("\\", "/", $n);
             if (strpos($f, "ILYEUM/")===0){
@@ -24,11 +44,29 @@ class App{
             return 0;
         });     
 
-        $sm_instance = new app();
-        return $sm_instance;
+        self::$sm_instance = new static;
+        self::$sm_instance->plugins_file = $file;
+        self::$sm_instance->initialize();
+        return self::$sm_instance;
     }
-    
+    /**
+     * .ctrl
+     * @return void 
+     */
     private function __construct(){
+    }
+    private function initialize(){ 
 
+        $configs = [];
+        require(ILM_WHITE_BOOK_DIR."/Configs/config.php");
+ 
+
+        $this->configs = new ConfigHandler($configs); 
+
+        foreach([
+            \ILYEUM\WhiteBooks\Admin\Manager::class
+            ] as $c){
+                ilm_environment()->getClassInstance($c);
+        }       
     }
 }
