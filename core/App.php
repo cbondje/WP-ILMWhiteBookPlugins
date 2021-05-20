@@ -5,12 +5,24 @@ namespace ILYEUM;
 use ILYEUM\wp\actions;
 
 require_once(__DIR__."/core.php");
-
+require_once(__DIR__."/ConfigHandler.php");
 class App{
     private static $sm_instance;
 
-    var $config; 
-    var $plugins_file;
+    private $configs; 
+    private $plugins_file;
+
+    public function getPluginFile(){
+        return $this->plugins_file;
+    }
+    public function getConfigs(){
+        return $this->configs;
+    }
+    public function __get($n){
+        if (method_exists($this, $fc = "get".$n)){
+            return $this->$fc();
+        }
+    }
 
     public static function getInstance(){
         return self::$sm_instance;
@@ -29,7 +41,9 @@ class App{
     public static function boot($file){
         spl_autoload_register(function($n){           
             $f = str_replace("\\", "/", $n);
-            if (strpos($f, "ILYEUM/")===0){
+            $ns = self::$sm_instance->configs->plugin_entry_ns;
+   
+            if (strpos($f, $ns."/")===0){
                 $f = substr($f, 7); 
             } 
             if(file_exists($f=__DIR__."/".$f.".php")){
@@ -56,17 +70,23 @@ class App{
     private function __construct(){
     }
     private function initialize(){ 
-
+        
         $configs = [];
         require(ILM_WHITE_BOOK_DIR."/Configs/config.php");
- 
-
         $this->configs = new ConfigHandler($configs); 
-
+        
         foreach([
-            \ILYEUM\WhiteBooks\Admin\Manager::class
+            \ILYEUM\WhiteBooks\Admin\Manager::class,
+            \ILYEUM\WhiteBooks\Pages\Init::class,
             ] as $c){
                 ilm_environment()->getClassInstance($c);
-        }       
+        }  
+        // | init widget
+        add_action('widgets_init', function() use ($ms){
+			$tab = $this->configs->wp_widgets;
+			foreach($tab as $k){
+				register_widget($k);
+			}
+		}); 
     }
 }

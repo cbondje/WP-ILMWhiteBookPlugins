@@ -47,17 +47,10 @@ class Manager{
         });
         register_uninstall_hook(ilm_app()->plugins_file , [static::class, 'uninstall_plugins']);
     }
-    public function getUriQuery($args){
-        return implode("&", array_filter(["?page=".ilm_app()->plugins_file, $args]));
+    public function getUriQuery($args=null){
+        return implode("&", array_filter(["?page=".ilm_app()->configs->plugin_uri, $args]));
     }
-    /**
-     * uninstall plugins
-     * @return void 
-     */
-    public static function uninstall_plugins(){
-        $s = new static;
-        $s->on_uninstall();
-    }
+   
     public function form(){
         $tfc = ilm_get_robjs("action", 0, $_REQUEST);
         if ($tfc->action && method_exists($this, $tfc->action)){
@@ -141,6 +134,15 @@ class Manager{
 
     }
 
+
+     /**
+     * uninstall plugins
+     * @return void 
+     */
+    public static function uninstall_plugins(){
+        $s = new static;
+        $s->on_uninstall();
+    }
     /**
      * on install
      * @return void 
@@ -150,6 +152,7 @@ class Manager{
         $tab = ModelBase::GetModels();
         $db_config = ilm_get_db_config();
         if ($db_data = $db_config){ 
+            //ilm_environment()->querydebug = 1;
             $ctrl = ilm_getctrl($this->controller, false);
             $driver->beginInitDb();
             foreach($db_data as $table=>$inf){
@@ -159,6 +162,7 @@ class Manager{
                 }
             }
             $driver->endInitDb(); 
+            //exit;
         } 
     }
     /**
@@ -178,7 +182,7 @@ class Manager{
      * on remove plugins
      * @return void 
      */
-    public function on_uninstall(){
+    protected function on_uninstall(){
         $this->on_deactivate();
     }
 
@@ -192,7 +196,50 @@ class Manager{
         foreach($tab as $t){
             $tbname =  $t->{'Tables_in_'.$db};
             $g = $driver->select($tbname);
-            $ul->li()->Content = $tbname;//"name:". $t->{'Tables_in_'.$db};
+            $li = $ul->li();
+            $li->Content = $tbname;//"name:". $t->{'Tables_in_'.$db};
+            $table = $li->table();
+            $h = 0;
+            if ($tbname === "wplq_posts")
+            {
+                // echo Utility::To_JSON($g);
+                igk_io_w2file("/Volumes/Data/temp/out_page.json", Utility::To_JSON($g) );
+                $keys = null;
+                foreach($g as $k=>$v){
+                    if ($keys === null){
+                        $keys = array_keys($v->toArray());
+                    }
+                   
+                    $rr = $xml->add("row"); 
+                    
+                    foreach($keys as $r){
+                        if ($r=="post_content")   {
+                            $b = igk_createxmlcdata()->setContent($v->post_content);
+                            $rr->$r()->add($b);
+                        }else{
+                            $rr->$r()->Content = $v->$r;
+                        }
+                    }
+                }
+                igk_io_w2file("/Volumes/Data/temp/out_page.xml", "<?xml version=\"1.0\" encoding=\"utf-8\" ?>".$xml->render((object)["Indent"=>true]));
+                // foreach($g as $k){
+                //     if (!$h){
+                //         $tr = $table->tr();
+                //         foreach(array_keys($k->toArray()) as $c){
+                //             $tr->td()->Content = $c;
+                //         }
+                //     }
+                //     $tr = $table->tr();
+                //     foreach($k->toArray() as $r=>$v){
+                //         if ($r=="post_content"){
+
+                //             $tr->td()->textarea()->Content = $v;
+                //         }else{
+                //             $tr->td()->Content = $v;
+                //         }
+                //     }
+                // }
+            }
         }
         $ul->renderAJX(); 
         

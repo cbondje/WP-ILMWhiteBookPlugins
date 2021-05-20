@@ -1,1 +1,6 @@
 <?php
+
+$l["Book download flow"] = "OK";
+$l["Book not found"] = "Le livre n'as pas été trouver";
+$l["Books not found"] = "Aucun livre blanc trouver";
+$l["Book Details"] = "Details du livre"; 

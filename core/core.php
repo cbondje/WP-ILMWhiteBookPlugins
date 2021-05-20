@@ -1,4 +1,9 @@
 <?php
+// @author: C.A.D. BONDJE DOUE
+// @file: 
+// @desc: 
+// @date: 20210517 12:19:00
+
 
 use ILYEUM\ConfigHandler;
 use ILYEUM\wp\database\driver;
@@ -243,4 +248,16 @@ function ilm_db_create_options(){
         "Sort"=>null,
         "SortColumn"=>null
     ];
+}
+/**
+ * utility parse uri
+ * @param mixed $u 
+ * @return mixed 
+ */
+function ilm_html_uri($u){
+    return str_replace("\\", "/", $u);
+}
+
+function ilm_server(){
+    return ILYEUM\Server::getInstance();
 }

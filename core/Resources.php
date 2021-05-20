@@ -15,7 +15,7 @@ class Resources{
     }
     private function _init_resources(){
         $l=[];
-        include(ILM_WHITE_BOOK_DIR."/Configs/Lang/fr.presx");
+        include(ILM_WHITE_BOOK_DIR."/Configs/Lang/lang.fr.presx");
         $this->m_resources = $l;
     }
 }
