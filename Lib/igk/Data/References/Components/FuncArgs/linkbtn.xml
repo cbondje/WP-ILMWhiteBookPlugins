@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinkBtn><attr name="uri" required="1"></attr><attr name="img" required="1"></attr><attr name="width" def-v="16"></attr><attr name="height" def-v="16"></attr></LinkBtn>

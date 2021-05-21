@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="utf-8"?>
+<jsbutton><attr name="js" require="1" fr="Script a évaluer au moment du click. "></attr></jsbutton>

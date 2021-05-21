@@ -1,0 +1,28 @@
+.igk-winui-uitrack{
+background-color:indigo;
+height:0.5em;
+width:100%;
+margin:1em 0;
+}
+
+<?php
+$def[".igk-winui-uitrack + .igk-winui-uitrack"] = "margin-top:2em;";
+
+
+
+$def[".igk-winui-uitrack.default"] = "{sys:bdr-1} border-color: #dadada; background-color:[syscl:uitrackBackgroundColor]; border-radius: 4px; line-height:0;";
+$def[".igk-winui-uitrack.default:hover"] =  "box-shadow: 0 0 6px #005ca4; ";
+$def[".igk-winui-uitrack.default:before"] = "{sys:posab, loc_l, loc_r, loc_t, loc_b} content:' '; border:none; margin-top:-1em;margin-bottom:-1em; ";//space to allow selection on touch
+
+
+$def[".igk-winui-uitrack.default .disp"] = "{sys:posab} left:calc(100% + 0.3em); pointer-events:none";
+$def[".igk-winui-uitrack.default:focus .disp"] = "text-decoration:underline";
+$def[".igk-winui-uitrack.default input"] = "{sys:posab}clip:rect(0,0,0,0); width:0px; height:1px;";
+$def[".igk-winui-uitrack.default input:focus + .disp"] = "text-decoration:underline";
+
+// $def[".igk-winui-uitrack.default:before"] = "{sys:posab} content: ' ';  top: calc(50% - 0.75em); left:calc(0.5 * (100% - 2em)); background-color:red; border-radius: 50%; width:1.5em; height:1.5em; cursor:pointer;";
+
+
+$def[".igk-winui-uitrack.default .bl"] = "{sys:posab, loc_l, loc_t, loc_b} content:' '; background-color:[syscl:uitrackFuelLineColor]; width:50%; z-index:1; border-radius: 4px 0 0 4px ;";
+$def[".igk-winui-uitrack.default .cur"] = "{sys:posab} cursor:pointer; top: calc(50% - 0.75em);  background-color:[syscl:uitrackCursorColor]; border-radius: 50%; width:1.5em; height:1.5em; z-index:2;";
+?>

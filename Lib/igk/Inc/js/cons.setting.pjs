@@ -1,0 +1,72 @@
+var q = igk(igk.getParentScriptByTagName('table'));
+igk.ready(function(){
+	var e_=null;
+	var u_='<?= $uri ?>';
+
+	function _start(){
+		if (e_==null){
+
+		}
+	}
+
+	q.select('.e').each(function(){
+		// console.debug('reg event');
+		this.reg_event("dblclick", function(){
+			 //console.debug("on dbl click");
+			 if (e_!=null){
+				 if (e_.t==this)
+					 return;
+				 //restore to default
+				 igk(e_.t).setHtml(e_.c);
+				 e_ = null;
+			 }
+			 var s = this.innerHTML;
+			 var i = this.parentNode.childNodes[0].innerHTML;
+			 e_ = {
+				 c:s,
+				 t:this
+			 };
+			 var n = ns_igk.createNode('form');
+			 n.o["action"] = u_;
+			 n.add('input').setAttributes({
+				 'id':'clName',
+				 'type':'hidden',
+				 'value':i
+			 });
+			 var v_s = n.add('input').setAttributes({
+				 'id':'clValue',
+				 'class':'cltext igk-form-control',
+				 'value':s
+			 }).reg_event("keypress", function(evt){
+				// console.debug(evt.keyCode);
+				switch (evt.keyCode){
+					case 13:
+					 evt.preventDefault();
+					 var mq=this.value;
+					 igk.ajx.post(u_, "clName="+this.form["clName"].value+"&clValue="+this.value, function(xhr){
+						 if (this.isReady()){
+							 if (!e_)return;
+							 igk(e_.t).setHtml(mq);
+
+							 if (e_.c!=mq){
+								 e_.t.parentNode.childNodes[2].innerHTML='<b>user define</b>';
+							 }
+							 e_ = null;
+						 }
+					 });
+					 break;
+					 case 27:
+							//restore
+							igk(e_.t).setHtml(e_.c);
+							e_ = null;
+						break;
+				 }
+			 });
+
+			 $igk(this).setHtml('').add(n);
+			 v_s.o.focus();
+
+		});
+		return 1;
+	});
+});

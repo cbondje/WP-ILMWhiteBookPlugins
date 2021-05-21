@@ -1,0 +1,13 @@
+//<?php
+//style video controls
+//author : C.A.D. BONDJE DOUE
+//file : .style.func
+//desc : only style function style management. on node render
+
+
+$d= $extra[0]->Document;
+igk_css_bind_wuistyle($d, $CF, $type);
+//all for default 
+igk_js_bind_wuiscript($d, $CF, ".default.js", $bind);
+return 1;
+//?>

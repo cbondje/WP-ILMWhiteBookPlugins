@@ -1,0 +1,34 @@
+<?php
+// desc: on theme context global style definition
+
+
+$def[".igk-google-circle-waiter"] = "{sys:no-overflow} width:48px; height:48px; padding:4px; margin:8px";
+$def[".igk-google-circle-waiter .igk-anim-time-board.i-1"] = 
+"width:0px; height:0px; color:aqua; content:'main'; " .
+igk_getv(array("[trans:all 0.85s linear]",
+"[trans:color 0.5s linear, width 1.5s linear, height 0.25s linear 0.25s]"),1);// 
+$def[".igk-google-circle-waiter .igk-anim-time-board.igk-cl-1"] ="color:green;";
+$def[".igk-google-circle-waiter .igk-anim-time-board.igk-cl-2"] ="color:blue;";
+$def[".igk-google-circle-waiter .igk-anim-time-board.igk-cl-3"] ="color:orange;";
+$def[".igk-google-circle-waiter .igk-anim-time-board.igk-cl-4"] ="color:red;";
+
+
+$def[".igk-google-circle-waiter .igk-anim-time-board.i-2"] = "width:0px; [trans:width 0.45s ease-in-out 0.25s]";
+
+
+
+
+$theme->reg_keyFrames($def,"google-linewaiter-infinite", "0%{right:100%} 60%{right:0px} 100%{ right: 0px; }");
+$theme->reg_keyFrames($def,"google-linewaiter-infinite2", "0%{left:0px} 20%{left: 0px} 100%{left:100%}");
+
+//google line waiter
+$def[".igk-google-line-waiter"] = "{sys:no-overflow, fitw} height:4px; background-color:#e6e6e6";
+$def[".igk-google-line-waiter:after"] = "{sys:fith,posab, loc_l} content:' '; background-color:#4BC281; [anim:google-linewaiter-infinite 3s infinite, google-linewaiter-infinite2 3s infinite]";
+$def[".igk-card-id"] = "width:200px; height:200px;";
+
+$def[".google-button"] = "{sys:dispib, posr, no-overflow}padding:10px; cursor:pointer; ";
+$def[".google-button > .cur.trans"] = "[trans:all 0.5s ease-in-out]; border-radius:50%;";
+$def[".google-button > .cur"] = "{sys:dispib, posab, loc_l, loc_t} cursor:inherit; width: 1px; height:10px; margin:-5px; background-color:black; opacity:0.5;  ";
+// $def[".google-button:after"]="content:attr(cury); position:absolute; width:0px; height:0px; top: attr(cury); left:attr(curx); [trans:all 0.2s ease-in-out]; background-color:black; opacity:0.5;";
+$def[".google-button.igk-show-cur > .cur"]="left:0px; width:100%";
+

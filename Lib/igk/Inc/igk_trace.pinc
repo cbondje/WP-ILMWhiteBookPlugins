@@ -1,0 +1,37 @@
+<?php
+// @file: igk_trace.pinc
+// @author: C.A.D. BONDJE DOUE
+// @description:
+// @copyright: igkdev © 2020
+// @license: Microsoft MIT License. For more information read license.txt
+// @company: IGKDEV
+// @mail: bondje.doue@igkdev.com
+// @url: https://www.igkdev.com
+
+
+
+if((igk_get_env(IGK_ENV_NO_TRACE_KEY) != 1) && igk_const_defined("IGK_TRACE", 1)){
+    $lv=igk_get_env('TRACE_LEVEL', igk_get_env(IGK_ENV_TRACE_LEVEL, 2));
+    $c=IGKException::GetCallingFunction($lv);
+    if (igk_is_cmd()){
+        $cp = (object)[];
+        foreach($c as $k=>$v){
+            $cp->$k = $v;
+
+            if ($k=="function"){
+                echo implode(":", (array)$cp).PHP_EOL;
+            } 
+        }
+    }else {
+
+        $dn=igk_createnode("div");
+        $n=$dn->add("table")->setClass("igk-table-hover igk-table-striped");
+        $r1=$n->addTr();
+        $r2=$n->addTr();
+        foreach($c as $k=>$v){
+            $r1->addTh()->addDiv()->Content=$k;
+            $r2->addTd()->addDiv()->Content=$v;
+        }
+        echo $dn->Render();
+    }
+}

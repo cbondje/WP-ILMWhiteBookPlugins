@@ -1,0 +1,6 @@
+//<?php
+//file:Lib\igk\Ext\WinUI\Components\uiTrack\.style.func
+igk_css_bind_wuistyle($extra[0]->Document, $CF, $type);
+igk_js_bind_wuiscript($extra[0]->Document, $CF, ".".$type.".js", $bind);
+return 1;
+//?>

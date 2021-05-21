@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="utf-8"?>
+<YoutubeVideo><attr name="uri" required="1"></attr><attr name="param"></attr></YoutubeVideo>

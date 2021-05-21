@@ -1,0 +1,346 @@
+<?php
+// balafon pcss syntax
+// [type:name] : replace type with name
+// {r:def[,...def]} : r is sys: to get system basic css definition
+// [resolv: css-def] : resolving expression
+// (sys: css-declaration) : importing system css declaration
+
+// by default important in balafon system view
+// $def = $vsystheme->def;
+$def[IGK_CSS_MEDIA_TYPE_CLASS] = "z-index:-9999; content:'global'";
+
+
+$def["*"]  = "padding:0px; margin:0px; box-sizing: border-box";
+$def["html, body, ul, div, p"] = "padding:0px; margin:0px; position:relative;";
+
+
+
+
+$def["a"] = "[sysfcl:linkForeColor] text-decoration:none;";
+$def["body li"] = "list-style-type:none;";
+$def["body a, body img, body a:hover, body a:focus"]= "text-decoration:none; list-style-type:none;";
+$def["body a:hover"]="[sysfcl:linkHoverForeColor]";
+$def["html, body"] = "width:100%; height:100%;";
+$def["span"]="white-space: normal";//for span white space are not interprete as the same IE#firefox
+//define shortcut icon theme
+
+$def[".posab"] = "position:absolute;";
+$def[".posfix"]="position:fixed;";
+$def[".posr"] = "position:relative;";
+$def[".poss"] = "position:static;";
+$def[".floatl"] = "float:left;";
+$def[".floatr"] = "float:right;";
+$def[".clearb"] = "clear:both;";
+$def[".clearl"] = "clear:left;";
+$def[".clearr"] = "clear:right;";
+$def[".overflow-a"] = "overflow:auto !important;";
+$def[".overflow-x-a"] = "overflow-x:auto !important;";
+$def[".overflow-y-a"] = "overflow-y:auto !important;";
+$def[".overflow-x"] = "overflow-x:scroll !important;";
+$def[".overflow-y"] = "overflow-y:scroll !important;";
+
+$def[".clearb-row:after"]= "clear:both; display:table; content:' ';";
+
+
+$def[".alignl"] ="text-align:left !important;";
+$def[".alignr"] ="text-align:right !important;";
+$def[".alignc"] ="text-align:center !important;";
+
+$def[".alignm"] ="vertical-align:middle !important;";
+$def[".alignb"] ="vertical-align:bottom !important;";
+$def[".alignt"] ="vertical-align:top !important;";
+$def[".flip-x"] = "[transform: rotate(180deg)];";
+$def[".flip-y"] = "[transform: scale(1.O, -1.0)];";
+
+$def[".box-center"] = "{sys:posab} top:50%; left:50%; [transform:translate(-50%, -50%)]";
+
+$def[".igk-text-c"] ="text-align:center !important; vertical-align: middle !important;";
+
+$def[".ztop"] ="z-index: 9000;";
+$def[".zback"] ="z-index: -9000;";
+$def[".fitw"] ="width:100%;";
+$def[".fitw-i"] ="width:100% !important;";
+$def[".fitw-a"] = "width:auto !important;";
+$def[".fith-a"] = "height:auto !important;";
+$def[".fit"] ="width:100%; height:100%;";
+$def[".fitc"] = "[fit:cover]";
+$def[".igk-underline-div"] ="display:block; position:absolute; height:2px; width:100%; background-color:#414141; bottom :0px;";
+$def[".igk-underline-div:hover"] = "[sysbgcl: underlineHover]";
+$def[".bdr-1"] = "border:1px solid black;";
+$def[".fts-i"] = "font-style:italic;";
+$def[".cur-pointer"] = "cursor:pointer;";
+$def[".cur-default"] = "cursor:default;";
+
+$def[".margin-a-lr"] 
+= $def[".margin-a-w"] 
+= "margin-left:auto; margin-right:auto;";
+
+
+$def[".igk-web-pageinfo"] = "{sys:dispn}";
+$def[".igk-prev"] = "border-radius:0px; [sysbgcl:buttonBackground]";
+$def[".igk-prev-sys"] = "max-height:300px; overflow-y:auto";
+$def[".igk-hbox"] = "border:none; height:1px; width:1px; margin-bottom:-1px; clip:rect(0,0,0,0); overflow:hidden; position:absolute; padding:0px;";
+
+$def["igk-web-page"] = "{sys:fit}";
+
+$def[".cllabel.clrequired"] = "";
+$def[".cllabel.clrequired:after"] = "content:' *'; display:inline-block; white-space:pre; [fcl:igk-required-mark-fcl]";
+
+
+//article options
+$def[".igk-article-options"] = "{sys:posr, alignl,loc_l,loc_t,z_50,fitw} font-size:14pt;";
+$def[".igk-article-options:before"]="content:' '; {sys:dispb,fit,posab} z-index:-10; background-color:black; opacity:0.5;";
+$def[".igk-article-options img"] ="display:inline;";
+$def[".igk-article-options > a "] ="display:inline-block;";
+$def[".igk-article-options .igk-symbol"] = "{sys:dispib, alignm,fit} width:32px solid black; overflow:hidden; ";
+$def[".igk-article-options .igk-symbol:hover"]="color:indigo; ";
+$def[".igk-article-options .mark"]="{sys:dispib} width:32px; height:32px; padding:4px; overflow:hidden; vertical-align:middle;";
+$def[".igk-article-options .mark .igk-symbol"]="background-repeat:no-repeat !important; vertical-align:top;";
+$def[".igk-article-options .mark svg"]="width:100%; height:100%";
+
+//
+$def[".".IGK_SESSION_CTRL] = "{sys:posfix, loc_r, loc_t} top:32px; right:32px;  z-index: 10000;";
+$def[".capitalize"] = "text-transform:capitalize;";
+$def[".uppercase"] = "text-transform:uppercase;";
+$def[".lowercase"] = "text-transform:lowercase;";
+$def[".fith"] ="height:100%;";
+$def[".hide"] ="display:none;";
+$def[".halfw"] ="width:50%;";
+$def[".halfh"] ="height:50%;";
+
+
+$def[".pad4"] = "padding: 4px;";
+$def[".marg4"] = "margin: 4px;";
+$def[".marg-a"]="margin:auto;";
+$def[".padd-a"]="padding:0.5em;";
+
+$def[".center-box"] = "position:relative; margin: 0px auto; top: 50%; left:0%;[transform: translate(0%, -50%)]";
+$def[".fitvh"] = "height: 100vh;";
+$def[".fitvw"] = "width: 100vh;";
+
+$def[".no-wrap"] = "white-space: nowrap !important; ";
+$def[".no-border"] = $def[".no-bdr"]  = "border:none !important;";
+$def[".no-background"] = "background-color:transparent !important;";
+$def[".no-margin"] = "margin:0px !important;";
+$def[".no-padding"] = "padding:0px !important;";
+$def[".no-decoration"] ="text-decoration:none !important;";
+$def[".no-repeat"] = "background-repeat:no-repeat;";
+$def[".no-overflow"] = "overflow:hidden;";
+$def[".no-style"] = "text-decoration:none; list-style-type:none; border:none;";
+$def[".no-visible"] = "visibility: hidden;";
+$def[".no-resize"] = "resize:none;";
+$def[".no-focus"] = "text-decoration:none; border:none; outline:0;";
+$def[".no-selection"] = "[resolv:user-select: none;]";
+$def[".no-contextmenu"] = "/*disable context menu*/";
+$def[".no-drag"] = "[resolv:user-select: none;]";
+$def[".no-outline"]="outline:none !important; outline-style:none;";
+
+$def[".no-appearance"]="[resolv:appearance:none;]";
+
+$def[".no-scrollbar::-webkit-scrollbar"] = "display:none;";
+$def[".no-scrollbar"] = "scrollbar-width:none; -ms-overflow-style:none;";
+$def[".no-cursor"] = "cursor: none;";
+
+$def[".ellipsis"]= "text-overflow:ellipsis;";
+$def[".wrapnormal"] = "white-space:normal;";
+$def[".loc_b"]="bottom:0px;";
+$def[".loc_l"]="left:0px;";
+$def[".loc_mid"]="left:50%; top: 50%;";
+$def[".loc_r"]="right:0px;";
+$def[".loc_t"] = "top:0px;";
+$def[".loc_a"] = "top:0px !important; bottom: 0px !important; right: 0px !important; left: 0px !important;";
+
+$def[".nomargin"] = "margin-top:0px; margin-left:0px;margin-right:0px; margin-bottom:0px;";
+$def[".nopadding"] = "padding-top:0px; padding-bottom:0px; padding-right:0px; padding-left:0px;";
+$def[".nodecoration"]="text-decoration:none;";
+$def[".block_5m"] = "margin:5px;";
+$def[".block_10m"] = "margin:10px;";
+
+for($i =0; $i<= 10; $i++){
+	$def[".z-level-".$i] = "z-index:".($i*10).";";
+}
+
+
+$def[".resizable"] = "resize:both;";
+$def["*:before, *:after"]= "box-sizing: border-box";
+
+
+$def[".scroll_h_x"] = "overflow-x:hidden;";
+$def[".scroll_h_y"] = "overflow-y:hidden;";
+$def[".scroll_x"] = "overflow-x: scroll;";
+$def[".scroll_y"] = "overflow-y: scroll;";
+$def[".scroll_ay"] = "overflow-y: auto;";
+$def[".scroll_ax"] = "overflow-x: auto;";
+$def[".autoh"] = "height:auto;";
+$def[".autow"] = "width:auto;";
+
+$def[".puce_circle"]= "list-style-type:disc;";
+
+$def[".dispn"] = "display:none;";
+$def[".dispb"] = "display:block;";
+$def[".dispi"] = " display:inline;";
+$def[".dispib"] = "display:inline-block;";
+
+$def[".dispn_i"] = "display:none !important;";
+$def[".dispb_i"] = "display:block !important;";
+$def[".dispi_i"] = " display:inline !important;";
+$def[".dispib_i"] = "display:inline-block !important;";
+
+
+$def[".disptabc"] = " display: table-cell;";
+$def[".disptable"] = " display:table;";
+$def[".disptabr"] = " display: table-row;min-height:0px;";
+
+//-----------------------------------------------------------------
+//flex properties
+//-----------------------------------------------------------------
+$def[".dispflex"] =  
+$def[".flex"] = "display: flex;";
+$def[".flex-no-wrap"] = "flex-wrap: nowrap;";
+$def[".flex-wrap"] = "flex-wrap: wrap;";
+$def[".flex-wrap-reverse"] = "flex-wrap: wrap-reverse;";
+$def[".flex-a-center"] = "justify-content: center; align-items: center;";
+
+//-----------------------------------------------------------------
+//grid properties
+//-----------------------------------------------------------------
+$def[".dispgrid"] =  
+$def[".grid"] = 
+$def[".igk-grid"] = "display: grid;";
+
+
+$def[".dispigrid"] =  
+$def[".i-grid"] = 
+$def[".igk-inline-grid"] = "display: inline-grid;";
+
+
+$def[".igk-clear-cell"] = "display:table; content:' ' ; clear:both;";
+
+
+$def[".box_16x16"] = "width:16px; height:16px;";
+$def[".box_24x24"] = "width:24px; height:24px;";
+$def[".box_32x32"] = "width:24px; height:32px;";
+$def[".box_48x48"] = "width:48px; height:48px;";
+
+
+
+$def[".editstyle-ajx-form"] = IGK_STR_EMPTY;
+$def[".editstyle-ajx-form .cltextarea"] = "width:400px; height:300px;";
+
+$def[".igk-body"] = "";
+$def[".igk-error-body"]  = "{sys:no-padding,no-margin}";
+$def[".igk-ctrl-options"] = "{sys:dispb} text-align:left;vertical-align:bottom; margin:0px;";
+$def[".igk-ctrl-options ul"] = "{sys:dispi}";
+$def[".igk-ctrl-options ul li"] = "{sys:dispib} vertical-align:middle;";
+
+
+//frame box;
+$def[".frame_textarea"] = "width: 500px; height:300px";
+$def[".igk-msbox-dialog"] = $def[".igk-framebox-dialog"] = "[bgcl:frameboxDialogBgColor, white] padding: 4px;";
+$def[".igk-msbox-dialog-title"] =
+$def[".framebox-dialog-title"]="position:relative; overflow:hidden; min-height:32px; font-size:14pt; [bgcl:igk-framebox-title-bgcl] [fcl:igk-framebox-title-fcl] cursor:move; padding-right: 64px;";
+
+$def[".hseparator"]="{sys:fitw} height: 16px; [res:hsep];";
+$def[".hidden"]="display:none;";
+
+$def[".transparent"] ="background-color:transparent; color:transparent;";
+$def[".igk-bodyinfo"] = "display:none;";
+
+$def[".config-fileviewdir"]="[res:folder_16x16]; background-repeat: no-repeat; text-indent: 24px; display:inline-block;";
+$def[".config-fileviewfile"]="[res:file_16x16]; background-repeat: no-repeat; text-indent: 24px; display:inline-block;";
+
+
+$def[".framebox-dialog .cltextarea"]="width:100%;min-height:124px";
+$def[".framebox-dialog-content .content"] = "overflow-y:auto;";
+$def[".framebox-title .title"]= "{sys:alignb}  white-space:nowrap !important;";
+$def[".framebox-title .framebox_close "]= "{sys:alignm, posab} right: 4px; top: 50%; [transform:translateY(-50%)]";
+//---------------------------------------------------------
+//CONFIG Home page for apage editor
+//---------------------------------------------------------
+$def[".igk-page-editor .framebox-dialog .cllabel "] = "{sys:alignr, dispib} width: 200px;";
+$def[".igk-page-editor .framebox-dialog  input,.igk-page-editor .framebox-dialog  select"] = "{sys:dispib, igk-form-control} width: 200px";
+$def[".igk-page-editor .framebox-dialog  input.clsubmit"] = "(sys:.igk-btn)";
+
+
+
+//font style
+
+$def[".thin"] = "font-weight: 100";
+$def[".regular"] = "font-weight: 200";
+$def[".bold"] = "font-weight: 400";
+
+$lg_screen[".igk-container"] = "padding: 0px 10px;";
+$def[".igk-container > .igk-container"] = "width:auto;";
+
+
+
+
+
+
+
+	//config button styles
+$btnstyle = "[sysbgcl:buttonBackgroundColor] [sysfcl:buttonTextColor] border:none; {sys:dispib} display:inline-block; margin:2px; vertical-align: middle; text-align:center;".
+"cursor:pointer;";
+
+
+
+
+$def["body .igk-cnf-connexion-div"] = "{sys:posab} left:50%; top:50%; margin-left:-150px; margin-top:-200px;background-color:white; padding:5px;";
+$def["body .igk-cnf-connexion-div input"] = "color:black;";
+
+//session
+$def[".igksessionctrl"] = "position:fixed; right:32px; top:32px; z-index:10000;";
+
+
+$def[".bodyBgColor"] = "[palbgcl:color_1]";
+$def[".bodyfColor"] = "[palfcl:color_2]";
+$def[".igk-btn-lnk"] = "(sys:.igk-btn)";
+$def[".igk-cnf-framebox .clbutton, .igk-cnf-framebox .clsubmit, .igk-cnf-framebox .clreset, .igk-cnf-framebox clbutton"] = $btnstyle;
+
+
+
+
+$def[".igk-horizontal-separator"]="{sys:dispb} height:1px;  [bgcl:igk-hsep-bg] border-bottom: 1px solid [cl:igk-hsep-light, #eee]; margin-bottom:10px";
+$def[".igk-powered"] = "display:block; position:fixed; background-color: [cl:poweredBgColor,#222]; color:[cl:poweredColor, white]; bottom:0px; z-index: 10000; font-size:12px; right:0px; border-radius:4px 0px 0px 0px; padding:4px 0px 0px 16px; ";
+$def[".igk-powered a"] = "color:white;";
+$def[".igk-powered a:visited,.igk-powered a:hover"] = "color:white;";
+$def[".igk-notify.igk-notify-danger .error-code"] = "background-color:#eee; color:#555; padding:10px;";
+
+
+$def["code.dispib"] = "width:auto !important; vertical-align:middle;";
+
+$PTR[".".IGK_SESSION_CTRL] = "display:none;";
+
+$cl["igk-framebox-title-bgcl"]=
+$cl["igk-hsep-bg"] =
+$cl["igk-notify-w-fcl"] =
+$cl["igk-notify-i-fcl"] =
+$cl["igk-cnf-add-prop-color"] =
+$cl["igk-framebox-title-fcl"]
+= "transparent";
+
+$cl["igk-framebox-title-fcl"] = "transparent";
+$cl["igk-hsep-bg"] = "transparent";
+$cl["igk-cnf-add-prop-color"] = "transparent";
+$cl["configFocusAreaSelected"] = "red";
+$cl["breadcrumbsLinkHover"] = "red";
+$cl["tableLightLinkHoverForeColor"] = "red";
+$cl["tableDarkLinkHoverForeColor"] = "indigo";
+$cl["pickfileHoverBackground"] = "red";
+$cl["frameboxDialogBgColor"] = "#eee";
+
+
+
+
+$def[".sm-block-only"] = "display:none";
+$def[".xsm-block-only"] = "display:none";
+
+$sm_screen[".sm-block-only"] = "display:block;";
+$xsm_screen[".xsm-block-only"] = "display:block;";
+
+
+$def[".clear-b:after"] = "display:table; clear: both; content:' '; ";
+
+/* cursor style */
+$def[".cursor-pointer"] = "cursor: pointer;";
+$def[".cursor-help"] = "cursor: help;";

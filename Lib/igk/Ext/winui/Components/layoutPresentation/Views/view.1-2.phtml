@@ -1,0 +1,16 @@
+<?php
+//manual layout site 2
+$r = $t->addRow()->setClass("posr");
+$col = $r->addCol("igk-col-4-2 igk-col-xsm-3-3 igk-col-sm-3-3 m-cell");
+$t->mainCell = $col->addDiv()->setContent("Main Cell#mainCell");
+
+$col = $r->addCol("igk-col-4-2 igk-col-xsm-3-3 igk-col-sm-3-3 r-cell")
+;//->setStyle("top:0px; bottom:10px; padding-bottom:20px");
+
+$r = $col->addRow()->setStyle("height:100%; ");
+$t->cell1 = $r->addCol("fitw")->addDiv()->setClass("c-1");
+$t->cell1->Content = "Cell 1#cell1";
+
+$t->cell2 = $r->addCol("fitw")->addDiv()->setClass("c-2");
+$t->cell2->Content = "Cell 2#cell2";
+?>

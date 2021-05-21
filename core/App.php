@@ -3,17 +3,22 @@
 namespace ILYEUM;
 
 use ILYEUM\wp\actions;
-
+if (!defined("IGK_FRAMEWORK")){
+    if (file_exists($fc = dirname(__FILE__)."/../Lib/igk/igk_framework.php")){
+        require_once($fc);
+    }
+}
 require_once(__DIR__."/core.php");
+require_once(__DIR__."/functions.php");
 require_once(__DIR__."/ConfigHandler.php");
 class App{
     private static $sm_instance;
 
     private $configs; 
-    private $plugins_file;
+    private $plugin_file;
 
     public function getPluginFile(){
-        return $this->plugins_file;
+        return $this->plugin_file;
     }
     public function getConfigs(){
         return $this->configs;
@@ -56,10 +61,11 @@ class App{
                 return 1;
             } 
             return 0;
-        });     
+        }); 
+   
 
         self::$sm_instance = new static;
-        self::$sm_instance->plugins_file = $file;
+        self::$sm_instance->plugin_file = $file;
         self::$sm_instance->initialize();
         return self::$sm_instance;
     }
@@ -82,7 +88,7 @@ class App{
                 ilm_environment()->getClassInstance($c);
         }  
         // | init widget
-        add_action('widgets_init', function() use ($ms){
+        add_action('widgets_init', function(){
 			$tab = $this->configs->wp_widgets;
 			foreach($tab as $k){
 				register_widget($k);

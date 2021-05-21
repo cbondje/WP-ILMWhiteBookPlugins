@@ -1,0 +1,17 @@
+<data-schemas>
+	<Entries />
+	<DataDefinition TableName="%prefix%templates" Description="Liste des templates installé localement">
+		<Column clName="clId" clAutoIncrement="true" clIsPrimary="true" clNotNull="true" clType="Int" />
+		<Column clName="clPackageName" clType="VARCHAR" clTypeLength="170" clNotNull="true" clIsUnique="true" />
+		<Column clName="clTitle" clType="Text" clNotNull="true" clTypeLength="60" />
+		<Column clName="clInstallDate" clType="DateTime" clNotNull="true" />
+		<Column clName="clVersion" clType="Int" clNotNull="true" clDefault="1.0" />
+		<Column clName="clPath" clType="Text" />
+		<Column clName="clDescription" clType="Text" />
+	</DataDefinition>
+	<DataDefinition TableName="%prefixtemplates_authors" Description="Liste des auteurs des templates">
+		<Column clName="clId" clAutoIncrement="true" clIsPrimary="true" clNotNull="true" clType="Int" />
+		<Column clName="clGuid" clType="VARCHAR" clTypeLength="36" clNotNull="true" clIsUnique="true" />
+		<Column clName="clUser_Id" clType="Int" clNotNull="true" clIsUnique="true" clLinkType="tbigk_users" />
+	</DataDefinition>
+</data-schemas>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<arraydata>
+<attr name="tab" require="1" desc="Array to display." type="array">
+<fr>Tableau à afficher</fr>
+</attr>
+
+<exceptions>
+<exception name="IGKInvalidOperation" desc="data must be an array" />
+</exceptions>
+</arraydata>

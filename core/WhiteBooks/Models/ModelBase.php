@@ -9,6 +9,8 @@ use Closure;
 use Exception;
 use ILYEUM\Utility;
 use ReflectionClass;
+use function ilm_getctrl as getctrl;
+use function ilm_wln as _wln;
 
 abstract class ModelBase{
     static $macros;
@@ -165,7 +167,7 @@ abstract class ModelBase{
         return null; 
     }
     public function getController(){
-        return ilm_getctrl($this->controller, false);
+        return getctrl();
     }
     public function getDataAdapter(){
         return ilm_environment()->getClassInstance(\ILYEUM\wp\database\driver::class);
@@ -200,7 +202,7 @@ abstract class ModelBase{
                         if ($g = $c->insert($c->raw)){                                                          
                             $c->raw = $g->raw;
                         }else{
-                            igk_wln("failed to create");
+                            _wln("failed to create");
                             return null;
                         }
                     }

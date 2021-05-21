@@ -1,0 +1,67 @@
+<?php
+// @file: tab.articles.list.phtml
+// @author: C.A.D. BONDJE DOUE
+// @description:
+// @copyright: igkdev © 2020
+// @license: Microsoft MIT License. For more information read license.txt
+// @company: IGKDEV
+// @mail: bondje.doue@igkdev.com
+// @url: https://www.igkdev.com
+
+use function igk_resources_gets as __;
+use IGK\Resources\R;
+
+
+($s_ctrl == null) && igk_die("selected controller not found");
+$div=$t;
+$div->add(new IGKHtmlSearchItem($ctrl->getUri("search_article"), null, "m_search_article"));
+$dir=$s_ctrl->getArticlesDir();
+$t=igk_io_getfiles($dir);
+$lang_search=null;
+$frm=$div->addForm();
+if(!(($ctrl->m_selectedLang == null) || ($ctrl->m_selectedLang == IGK_ALL_LANG)))
+    $lang_search=$ctrl->m_selectedLang;
+if($t && count($t) > 0){
+    sort($t);
+    $ul=$frm->addTable();
+    $ul["class"]="fitw";
+    $ul->setId($articleid);
+    $tr=$ul->addTr();
+    $tr->add("th")->Content=R::ngets(IGK_FD_NAME);
+    $tr->add("th", array("style"=>"width:16px"))->Content=IGK_HTML_SPACE;
+    $tr->add("th", array("style"=>"width:16px"))->Content=IGK_HTML_SPACE;
+    $tr->add("th", array("style"=>"width:16px"))->Content=IGK_HTML_SPACE;
+    $n=null;
+    foreach($t as $k){
+        $n=basename($k);
+        if($lang_search && !IGKString::EndWith(strtolower($n), igk_get_article_ext($lang_search)))
+            continue;
+        if($ctrl->m_search_article && !strstr(strtolower($n), strtolower($ctrl->m_search_article)))
+            continue;
+        $tr=$ul->addTr();
+        $tr->setClass("article");
+        $tr->addTd()->add("a", array("href"=>$ctrl->getUri("download_article&n=".$n)))->Content=$n;
+        $tr->addTd()->addAJXA($ctrl->getUri("ca_edit_article_ajx&navigate=1&ctrlid=".$s_ctrl->Name."&m=1&fc=1&fn=".base64_encode($k)))
+        ->addImg()->setSrc(R::GetImgUri("edit_16x16"));
+        $tr->addTd()->addAJXA($ctrl->getUri("ca_drop_article_ajx&n=".base64_encode($n)))->addImg()->setSrc(R::GetImgUri("drop_16x16"))->setAttributes(["title"=>__("Drop article")]);
+    }
+}
+$frm["action"]=$ctrl->getUri("ca_add_article_frame");
+$frm->addBtn("btn_addarticle", R::ngets("btn.AddArticle"));
+$frm->addInput("ctrl", "hidden", $s_ctrl->Name);
+$frm["igk-ajx-form"]=1;
+if($s_ctrl != null){
+    $frm->addInput("ctrlid", "hidden", $s_ctrl->Name);
+}
+igk_html_form_initfield($frm);
+$frm->addBalafonJS()->Content=<<<EOF
+var c = \$igk(igk.getParentScript());
+c.select('^form').first().select('tr.article').each_all(function(){
+	var q = this;
+	q.on("click", function(){
+		q.fadeout(20,500,1.0, function(){
+			q.remove();
+		});
+	});
+});
+EOF;

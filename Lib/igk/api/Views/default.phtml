@@ -1,0 +1,36 @@
+<?php
+// @file: default.phtml
+// @author: C.A.D. BONDJE DOUE
+// @description:
+// @copyright: igkdev © 2020
+// @license: Microsoft MIT License. For more information read license.txt
+// @company: IGKDEV
+// @mail: bondje.doue@igkdev.com
+// @url: https://www.igkdev.com
+
+///<summary>Represente class: IGKAPIInfo</summary>
+/**
+* Represente IGKAPIInfo class
+*/
+class IGKAPIInfo{
+    const VERSION="3.1";
+}
+igk_google_addfont($doc, "Roboto");
+$doc->Title="Api - [".IGK_PLATEFORM_NAME."]";
+$t->clearChilds();
+$t["class"]="google-Roboto";
+$dv=$t->addDiv();
+$dv["style"]="padding:2em";
+$dv->addSectionTitle(5)->Content="BALAFON <span>Api version <span>".IGKAPIInfo::VERSION."</span></span>";
+$c=$t->addDiv();
+$c=$c->addContainer();
+if(igk_is_conf_connected()){
+    $col=$c->addSingleRowCol();
+    $dv=$col->addDiv();
+}
+$dv=$t->addDiv()->setStyle("padding-left:2em");
+$ul=$dv->add("ul");
+foreach(["datadb"] as $k){
+    $ul->add("li")->addA($ctrl->getAppUri($k))->Content=$k;
+}
+$t->addDiv()->setStyle("padding-left:2em")->addIGKCopyright();

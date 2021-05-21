@@ -1,0 +1,18 @@
+<?php
+// @file: .extract_view_args.pinc
+// @author: C.A.D. BONDJE DOUE
+// @description:
+// @copyright: igkdev © 2020
+// @license: Microsoft MIT License. For more information read license.txt
+// @company: IGKDEV
+// @mail: bondje.doue@igkdev.com
+// @url: https://www.igkdev.com
+
+/** @var BaseController $ctrl */
+
+
+foreach($ctrl->getSystemVars() as $k=>$v){
+    $$k= & $v;
+}
+unset($k);
+unset($v);

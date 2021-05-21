@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xslt><attr name="xml" require="1" fr="chaine de contenu xml à transformer" en="data required"><en></en></attr></xslt><attr name="xslt" require="1"></attr><attr name="global"></attr><attr name="options"></attr>

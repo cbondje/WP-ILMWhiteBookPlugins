@@ -1,0 +1,48 @@
+<?php
+// @file: config.phtml
+// @author: C.A.D. BONDJE DOUE
+// @description:
+// @copyright: igkdev © 2020
+// @license: Microsoft MIT License. For more information read license.txt
+// @company: IGKDEV
+// @mail: bondje.doue@igkdev.com
+// @url: https://www.igkdev.com
+
+///<summary></summary>
+///<param name="base"></param>
+/**
+* 
+* @param mixed $base
+*/
+function igk_html_node_mediaimg($base){
+    $n=igk_createNode("div");
+    $n["class"]="igk-winui-media-img";
+    $n["igk:base"]=$base;
+    return $n;
+}
+$t->ClearChilds();
+$dv=$t->addDiv();
+$s=$dv->addSpan()->setClass("floatr");
+$s->addForm()->addAJXA($ctrl->getUri("addNewTemplate_ajx"))->setClass("igk-btn")->Content=R::ngets("btn.create");
+$dv->addSpan()->setClass("floatl")->addSectionTitle("5")->setFont("arial")->Content=R::ngets("title.mytemplates");
+$dv->addClearFloatBox();
+$r=$ctrl->Db->getInstallTemplates();
+if(!$r || $r->RowCount == 0){
+    $dv->addDiv()->Content="/!\\ No Templates installed";
+}
+else{
+    $dv=$t->addDiv();
+    igk_html_binddata($ctrl, $dv, "templateitem.template", $r->Rows);
+    $dv->setClass("fitw igk-clear-cell");
+    $dv->addDiv()->setClass("igk-clear-cell");
+}
+$dv=$t->addDiv();
+$dv=$t->addDiv();
+$dv->addSectionTitle("5")->setFont("arial")->Content=R::ngets("title.onlinetemplates");
+$dv->addA("http://balafon.igkdev.com/templates")->Content="Visit balafon.igkdev.com/templates";
+$dv=$t->addDiv();
+$dv->addSectionTitle("5")->setFont("arial")->Content=R::ngets("title.loadTemplate");
+$frm=$dv->addForm();
+$frm->addNotifyHost("template://msg");
+$frm->addajxPickFile($ctrl->getUri("loadtemplate_package_ajx"), "{complete:igk.ajx.fn.complete_ready('^form')}")->setClass("igk-btn igk-btn-default")->Content=R::ngets("btn.loadandinstall.templates");
+?>

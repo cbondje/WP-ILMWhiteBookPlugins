@@ -149,6 +149,10 @@ class Grammar{
                 $query .= "unsigned ";
             }
 
+            if (!empty($v->clLinkType)){
+                $this->m_driver->pushRelations($tbname, $v); 
+            }
+            
             if(!$number){
                 if(($v->clNotNull) || ($v->clAutoIncrement))
                     $query .= "NOT NULL ";
@@ -260,15 +264,14 @@ class Grammar{
         $query = rtrim($query).";";
         return $query; 
     }
-    public function add_foreign_key($table, $v, $nk=null){
-        $adapter  = $this->m_driver;
-        $db = $db ?? $adapter->getDbName();
+    public function add_foreign_key($table, $v, $nk=null, $db=null){   
+        $db = $db ?? $this->m_driver->getDbName();
         if (!empty($nk)){
             $nk = "CONSTRAINT '".$nk."'";
         }else {
             $nk= "";
         }
-        $query = sprintf("ALTER TABLE %s ADD %s FOREIGN KEY (%s) REFERENCES {%s}  ON DELETE RESTRICT ON UPDATE RESTRICT;\n",
+        $query = sprintf("ALTER TABLE %s ADD %s FOREIGN KEY (%s) REFERENCES %s  ON DELETE RESTRICT ON UPDATE RESTRICT;\n",
             "`{$db}`.`{$table}`", 
             $nk,
             $v->clName, sprintf("`%s`.`%s`(`%s`)",
@@ -463,16 +466,16 @@ class Grammar{
         $out .= "UPDATE `".$rtbname."` SET ";
         $t=0;
         $v_condstr = "";
-        $id=$condition == null ? getv($values, IGK_FD_ID): null;
+        $id=$condition == null ? getv($values, self::FD_ID): null;
 
         if(($id == null) && is_integer($condition)){
             $id=$condition;
         }
         $tableInfo= $tableInfo ?? get_db_table_info($tbname);
         $tvalues= static::GetValues($this->m_driver, $values, $tableInfo, 1);
-       
+        
         foreach($tvalues as $k=>$v){
-            if($id && ($k == IGK_FD_ID) || (strpos($k, ":") !== false))
+            if($id && ($k == self::FD_ID) || (strpos($k, ":") !== false))
                 continue;
             if($t == 1)
                 $out .= ",";
@@ -512,9 +515,20 @@ class Grammar{
 
         return $out;
     }
+    public function createDeleteQuery($tbname, $condition=null){
+        $c = "";
+        if ($condition && ($c = static::GetCondString($this->m_driver, $condition))){
+            $c = " WHERE ".$c;
+        }
+        return "DELETE FROM `".$this->m_driver->escape_string($tbname)."`".$c.";";        
+    }
+
     public static function IsUnsigned($v){
         if (method_exists($v, "IsUnsigned")){
             return $v->IsUnsigned();
+        }
+        if (in_array(strtolower($v->clType) , explode("|", "ubigint"))){        
+            return true;
         }
         return false;
     }
@@ -537,8 +551,9 @@ class Grammar{
         $tinf= getv($tableInfo, $columnName);        
         $def = static::AllowedDefValue();
 
-        if($tinf === null){            
-            fdie("can't get column: {$columnName} info in table: {$tbname}");
+        if($tinf === null){  
+            igk_trace();          
+            fdie("can't get column: [{$columnName}]'info in table: {$tbname}");
         }  
         if (!empty($tinf->clLinkType) && is_string($value) && (strpos($value,".")!==false)){            
             if ($v = $driver->GetExpressQuery($value, $tinf)){
@@ -689,6 +704,9 @@ class Grammar{
         if($tableInfo){
             $filter = $driver->filter; 
             foreach($tableInfo as $k=>$v){
+                if (empty($k)){
+                    die("key is null or empty");
+                }
                 if ($v->clIsPrimary && $filter){
                     continue;
                 }
@@ -1089,13 +1107,7 @@ class Grammar{
         return (object)["columns"=>$columns, "join"=>$join, "extra"=> $q. $query, "flag"=>$flag];
     }
 
-    public function createDeleteQuery($tbname, $condition=null){
-        $c = "";
-        if ($condition && ($c = static::GetCondString($this->m_driver, $condition))){
-            $c = " WHERE ".$c;
-        }
-        return "DELETE FROM `".$this->m_driver->escape_string($tbname)."`".$c.";";        
-    }
+    
 
 
     protected static function Key($t, $adapter, $separator=","){        

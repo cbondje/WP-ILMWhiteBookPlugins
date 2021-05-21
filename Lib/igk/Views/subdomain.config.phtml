@@ -1,0 +1,93 @@
+<?php
+// @file: subdomain.config.phtml
+// @author: C.A.D. BONDJE DOUE
+// @description:
+// @copyright: igkdev © 2020
+// @license: Microsoft MIT License. For more information read license.txt
+// @company: IGKDEV
+// @mail: bondje.doue@igkdev.com
+// @url: https://www.igkdev.com
+
+use function igk_resources_gets as __;
+use IGK\Resources\R;
+
+$t->clearChilds();
+$t->addDiv()->setStyle("display:none")->Content="Subdomain Manager";
+$t->addDiv()->addTitleLevel(4)->Content= __("Sub-Domain");
+$t->addHSep();
+$dom=IGKSubDomainManager::GetBaseDomain();
+$dv=$t->addDiv();
+$dv["class"]="igk-roll-owner";
+$dv->Content=$dom;
+$dv->addRollIn()->setClass("igk-pull-right")->addAJXA($ctrl->getUri("dom_add_db_edit_domain_ajx"))->addResImg("edit_16x16");
+
+$vlist=IGKSubDomainManager::getInstance()->domainList();
+if($vlist && (count($vlist) > 0) ){
+    $tdv=$t->addDiv();
+    $tdv["class"]="igk-row";
+    $tdv["style"]="margin:0px; margin-bottom:10px;";
+    $tdv->addDiv()->addTitleLevel(5)->Content=R::ngets("title.SystemDomain");
+    $dv=$tdv->addDiv();
+    foreach($vlist as $k=>$v){
+        $dv->add("div")->setClass("floatl")->setStyle("width:180px;")->Content=$v;
+    }
+}
+$tdv=$t->addDiv();
+$tdv["class"]="c-z igk-write";
+$tdv->addDiv()->addTitleLevel(5)->Content=R::ngets("title.DatbaseRegisteredDomain");
+igk_notifyctrl()->setNotifyHost($tdv->addDiv(), "domain/dbz");
+$db=igk_db_table_select_where($ctrl->DataTableName, null, $ctrl);
+if(!$db){
+    $tdv->addNotifyBox("danger")->Content=R::ngets("err.cantgetdomainlist");
+}
+else{
+    $c=$db->RowCount;
+    if($c > 0){
+        $tdv->addDiv()->Content=$c > 1 ? "Entries : ".$c: $c;
+        $tb=$tdv->addForm()->addDiv()->setStyle("min-width:300px; overflow-x:auto")->addTable();
+        $tb["class"]="igk-central fitw";
+        $tb["style"]="margin:auto; min-width: 500px;";
+        $tr=$tb->add("tr");
+        IGKHtmlUtils::AddToggleAllCheckboxTh($tr);
+        $tr->add("th")->setClass("igk-col-4-2")->Content=R::ngets("lb.clName");
+        $tr->add("th")->Content=R::ngets("lb.clCtlr");
+        $tr->add("th")->setClass("fitw")->Content=R::ngets("lb.clView");
+        $tr->add("th")->addSpace();
+        $scheme=igk_sys_srv_uri_scheme()."://";
+        $port=(($p=igk_server()->SERVER_PORT) != 80) ? ":".$p: "";
+        foreach($db->Rows as $k=>$v){
+            $tr=$tb->add("tr");
+            $tr->add("td")->addInput("item[]", "checkbox", $v->clId);
+            $uri=$scheme.$v->clName.".".$dom.$port;
+            $tr->add("td")->addA($uri)->Content=$v->clName.".".$dom;
+            $tr->add("td")->Content=$v->clCtrl;
+            $tr->add("td")->Content=$v->clView;
+            $tr->add("td")->addAJXA($ctrl->getUri("dom_edit_domain_ajx&i=".$v->clId))->addResImg("edit_16x16");
+            $tr->add("td")->addAJXA($ctrl->getUri("dom_drop_domain_ajx&i=".$v->clId))->setAttribute("domain", $v->clName)->addResImg("drop_16x16");
+        }
+    }
+    else{
+        $tdv->addDiv()->addText($c);
+    }
+}
+$b=$tdv->addForm()->addActionBar()->setClass("no-margin");
+$b->addAJXA($ctrl->getUri("dom_add_db_domain_ajx"))->setClass("igk-btn")->addResImg("add_16x16");
+$a=$b->addA($ctrl->getUri("dom_drop_db_s_domain_ajx"))->setClass("igk-btn");
+$a["onclick"]="javascript: var s = \$igk(this).select(\"^.c-z\").getItemAt(0).select(\"form\").getItemAt(0);"."ns_igk.ajx.postform(s.o, this.href, ns_igk.ajx.fn.replace_or_append_to_body); return false;";
+$a->addResImg("drop_16x16");
+$b->addAJXA($ctrl->getUri('dom_drop_domaintable'))->setClass("igk-btn")->addDiv() //->setStyle("line-height:1")
+->setContent(__("Clear Table"));
+$t->addBalafonJS()->Content=<<<EOF
+igk.system.createNS('igk.conf.subdomain', {
+	drop: function(t){
+		if (window.confirm(ns_igk.R.format('Please Confirm {0}', t.getAttribute('domain')))){
+			igk.ajx.post(t.href, ["confirm=1"], function(xhr){
+				if (this.isReady()){
+					console.debug("droped");
+				}
+			});
+		}
+	}
+});
+EOF;
+

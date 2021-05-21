@@ -1,0 +1,35 @@
+<?php
+
+igk_css_set_from("igk-video-controls");
+
+$def[".igk-video-controls"]="{sys:posab, loc_b, loc_l, no-wrap} display:table-row !important; line-height:1em; color:white;right:0px;";
+$def[".igk-video-controls:before"]="{sys:dispb, posab, fit}background-color:black; opacity:0.3; content:' '; ";
+$def[".igk-video-controls:after"]="content:' '; display:table; clear:both;";
+
+$def[".igk-video-controls > span > div"] = " padding:4px;";
+$def[".igk-video-controls > span"]="display:table-cell !important; height:32px; vertical-align:middle;";
+
+$def[".igk-video-controls .btn-c > div"]="font-family: 'global', arial, sans-serif; cursor:default; [trans:0.2s all]";
+$def[".igk-video-controls .btn-c > div:hover"]="color:#07f";
+
+
+
+$def[".igk-video-controls .txt-trackpos"]="{sys:posr, fitw} padding-top:12px; padding-bottom:12px;";
+
+//progress
+
+$def[".igk-video-controls .progress"] = "{sys:posb, fit} background-color:[syscl:videoProgressBackground];  cursor:pointer;";
+$def[".igk-video-controls .progress input"] = "{sys:posab, dispn} clip:rect(0,0,0,0); width:0px; height:1px;"; //hide input
+$def[".igk-video-controls .progress .bl"]="{sys:posab, fith} background-color: [syscl:videoPositionLineColor]; z-index:2;";
+$def[".igk-video-controls .progress .bf"]="{sys:posab,fit} z-index:1;";
+$def[".igk-video-controls .progress .bf > div"]="{sys:posab, fith, loc_t} background-color:[syscl:videoBufferLineColor];";
+$def[".igk-video-controls  .txt-trackpos > div"]="padding:0px;";
+
+//-----------------------------------------------------------------------------------------------
+//for video controls
+//-----------------------------------------------------------------------------------------------
+$def["video + .igk-video-controls:hover"]="[anim:none]";
+$def["video:hover + .igk-video-controls"]="[anim:none]";
+
+
+?>

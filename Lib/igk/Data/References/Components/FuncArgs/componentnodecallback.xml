@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<componentnodecallback>
+	<attr name="listener" required="1" fr="Listener implémentant IIGKParamHostService" ></attr>
+	<attr name="name" required="1" fr="Nom utilisé lors de l'enregistrement du composant"></attr>
+	<attr name="callback" required="1" fr="Fonction de rappel à utiliser pour créer le composant. La fonction prend 2 paramètres.
+	L'hôte et le nom utilisé pour la création.<div> Cette fonction doit renvoyer le noeud qui sera utilisé. Une exception est
+	générer si cette dernière ne renvoie pas de noeud.</div>"></attr>
+</componentnodecallback>

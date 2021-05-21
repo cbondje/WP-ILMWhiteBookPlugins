@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<fixedactionbar><attr name="targetid" type="string" desc="cibling for vertical scroll offset">
+</attr>
+<attr name="offset" def-v="1" desc="offset" type="int" >
+</attr></fixedactionbar>

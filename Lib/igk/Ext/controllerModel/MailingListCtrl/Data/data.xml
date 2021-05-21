@@ -1,0 +1,6 @@
+<DataDefinition TableName="tbsf_mailingList_Ctrl">
+<Column clName="clId" clType="Int" clTypeLength="25" clAutoIncrement="1" clNotNull="1" clIsPrimary="1"></Column>
+<Column clName="clEmail" clType="VarChar" clTypeLength="60" clNotNull="1" clIsPrimary="1" clIsUnique="1"></Column>
+<Column clName="clFirstName" clType="Text" clTypeLength="25"></Column>
+<Column clName="clLastName" clType="Text" clTypeLength="25"></Column>
+</DataDefinition>

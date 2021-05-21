@@ -157,7 +157,7 @@ abstract class ModelEntryExtension{
         $driver = $model->getDataAdapter(); 
         $primary = $model->getPrimaryKey();
         $tabInfo = $model->getTableInfo();
-       
+      
         if ($model->is_mock()){
             if (is_numeric($conditions)){            
                 $conditions = [$model->getPrimaryKey()=> $conditions];            

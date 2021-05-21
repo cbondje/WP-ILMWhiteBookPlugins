@@ -1,0 +1,16 @@
+<?php
+//author: C.A.D BONDJE DOUE
+//description: inclusion file
+
+$fc=isset($params) ? igk_getv($params, 0): null;
+$fc_result=null;
+if($fc && isset($fclist[$fc])){
+    $ht=array_slice($params, 1);
+    if(igk_count($ht) > 0){
+        $fc_result=call_user_func_array($fclist[$fc], $ht);
+    }
+    else
+        $fc_result=$fclist[$fc]();
+    unset($ht);
+}
+unset($fc);

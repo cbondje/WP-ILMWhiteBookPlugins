@@ -1,0 +1,162 @@
+<?php
+// IGKServerInfo::RemoteIp();
+// :domain info
+//TODO: CACHE TOOL
+
+use IGK\Resources\R;
+
+use function igk_resources_gets as __;
+
+
+$ctrl->setSelectedConfigCtrl(null);
+
+$box= igk_html_ctrl_view_config($ctrl, $cnf_n, "title.frameworkInfo", null);
+$box->setClass("home-cnf");
+$ctrl->_selectMenu("home", "IGKConfigCtrl::setpage");
+$ul=$box->addPanelBox()->add("ul")->setClass("gen_inf");
+
+
+$ul->addLi()->Content="FrameworkCodeName : ". IGK_PLATEFORM_NAME;
+$ul->addLi()->Content="FrameworkVersion : ". IGK_VERSION;
+$ul->addLi()->Content="FrameworkRelease : ".IGK_RELEASE_DATE;
+$ul->addLi()->Content="Author : ". IGK_AUTHOR;
+$li=$ul->add("li", array("class"=>"alignt"));
+$li->add("span", array("class"=>"alignt -lblabel"))->Content="Author Contact : ";
+$li->add("a", array(
+        "class"=>"alignt deco_u",
+        "style"=>"text-decoration:underline",
+        "href"=>"mailto:".IGK_AUTHOR_CONTACT
+    ))->Content="@igkdev.com";
+$ul->addLi()->Content="PhpVersion : ". PHP_VERSION;
+if(function_exists("apache_get_version"))
+    $ul->addLi()->Content="Apache Version : ". apache_get_version();
+$ul->addLi()->Content="ServerName : ".igk_io_server_name();
+$ul->addLi()->Content="OS : ".PHP_OS;
+$ul->addLi()->Content="OS Details: ".php_uname();
+$ul->addLi()->Content="UserAgent : ".igk_getv($_SERVER, "HTTP_USER_AGENT");
+$ul->addLi()->Content="ServerIP: ".IGKServerInfo::ServerAddress();
+$ul->addLi()->Content="RemoteIP : ". IGKServerInfo::RemoteIp();
+$ul->addLi()->Content="IsLocal : ". igk_parsebool(IGKServerInfo::IsLocal());
+$ul->addLi()->Content="BaseDir : ". igk_io_basedir();
+$ul->addLi()->Content="LibDir : ". IGK_LIB_DIR;
+$frm=$box->addForm();
+$frm["action"]=$ctrl->getUri("conf_install_platform");
+$frm["class"]="dispn";
+$frm["enctype"] = "multipart/form-data";
+$i=$frm->addInput("clFile", "file");
+$i["accept"]=".zip";
+$i["onchange"]="javascript: ns_igk.os.install(this.form, {wait:'please wait... installing', complete:'install complete !!!'}); return false;";
+$i["class"]="igk-btn igk-btn-default alignl dispib";
+$frm=$box->addForm();
+$frm->addLineWaiter();
+$u=$ctrl->getUri("checkForUpdate&v=".IGK_VERSION);
+
+$frm->addBalafonJS()->Content=<<<EOF
+igk.os.checkupdate('{$u}');
+
+EOF;
+$uform=$box->addPanelBox()->addDiv();
+if(igk_io_basedir_is_root() && function_exists("zip_open")){
+    $cl = \IGK\System\Installers\IGKBalafonInstaller::class;
+    if (class_exists($cl)){
+        $uri=igk_register_temp_uri($cl);
+         
+        $uform->addDiv()->setClass("igk-update-button")
+        ->addAJXPickFile($uri."/upload", "{complete:igk.core.install('".$uri."/update"."', '#update_target'),"."progress:igk.core.progress('#update_target'),"."accept:'.zip'"."}")
+        ->setAttribute("value", __("Update CoreLib"));
+        $uform->addDiv()->setId("update_target");
+        $uform->addScript()->Content=  file_get_contents(dirname(__FILE__).'/Scripts/configs/installer.js');
+    }
+}
+$uform->add("span")->setclass("badge git")->Content="<span>Git: </span><a href=\"https://github.com/goukenn/Balafon\" target=\"__blank\" > https://github.com/goukenn/Balafon </a>";
+$div=$box->addPanelBox()->addDiv();
+igk_html_add_title($div, "title.AdministrativeConfig");
+$div->addHSep();
+$frm=$div->addForm()->setClass("fitw");
+$frm["action"]=$ctrl->getUri("update_domain_setting");
+igk_notify_sethost($frm, "update_domain_setting");
+$frm->addDiv()->addSLabelInput("company_name", "text", $app->Configs->company_name);
+$frm->addDiv()->addSLabelInput("website_domain", "text", $app->Configs->website_domain, null, true);
+$frm->addDiv()->addSLabelInput("website_title", "text", $app->Configs->website_title);
+$frm->addDiv()->addSLabelInput("website_prefix", "text", $app->Configs->website_prefix);
+$frm->addDiv()->addSLabelInput("website_adminmail", "email", $app->Configs->website_adminmail);
+
+$dv=$frm->addDiv();
+$dv->addBtn("btn_domainName", __("Update"));
+$frm=$box->addPanelBox()->addForm();
+$frm->setId("adminpwd-form");
+$frm["action"]=$ctrl->getUri("update_adminpwd");
+igk_notify_sethost($frm->addDiv(), "update_adminpwd");
+$frm->addSLabelInput("passadmin", "password", null, ["autocomplete"=>"new-password"]);
+$frm->addBr();
+$frm->addBtn("btn.updateadminpwd", __("Update"));
+$frm=$box->addPanelBox()->addForm();
+$frm["action"]=$ctrl->getUri("update_defaultlang");
+$frm->addHSep();
+if(!$app->Configs->default_lang){
+    $app->Configs->default_lang= R::GetCurrentLang();
+}
+$v_csvc=igk_getctrl(IGK_CSVLANGUAGE_CTRL);
+igk_assert_die($v_csvc == null, "The controller 'IGK_CSVLANGUAGE_CTRL' is null");
+$tab=explode("|", $v_csvc->Languages);
+$tab=array_merge($tab);
+$dv=$frm->addDiv();
+$dv->addLabel("cldefaultLang")->Content=R::ngets("lb.cldefaultlang");
+$select=igk_html_build_select($dv, "cldefaultLang", $tab, array("allowEmpty"=>false, "keysupport"=>false), $app->Configs->default_lang);
+$select["class"]="igk-form-control cltext";
+$frm->addBr();
+$frm->addBtn("btn.updateCurrentLang", __("Update"));
+$frm=$box->addPanelBox()->addForm();
+$frm["action"]=$ctrl->getUri("update_default_tagname");
+$frm->addHSep();
+$frm->addSLabelInput("cldefault_node_tagname", "text", $app->Configs->app_default_controller_tag_name);
+$frm->addBr();
+$frm->addBtn("btn.updateGlobalSetting", __("Update"));
+$frm=$box->addPanelBox()->addForm();
+$frm["action"]=$ctrl->getUri("conf_update_setting");
+$div=$frm->addDiv();
+$ul=$div->add("ul");
+$ul["class"]="igk-row other-conf-setting";
+$tab=array(
+        "cldebugmode"=>["t"=>"allow_debugging", "v"=>igk_app()->Configs->allow_debugging],
+        //"clallowlog"=>["t"=>"allow_log", "v"=>false],
+        "clCacheLoadedFile"=>["t"=>"cache_loaded_file", "v"=>igk_app()->Configs->cache_loaded_file],
+        "clarticleconfig"=>["t"=>"allow_article_config", "v"=>igk_app()->Configs->allow_article_config],
+        "clinformAccessConnection"=>["t"=>"informAccessConnection", "v"=>igk_app()->Configs->informAccessConnection],
+        "clautocachepage"=>["t"=>"allow_auto_cache_page", "v"=>igk_app()->Configs->allow_auto_cache_page]
+    );
+foreach($tab as $s=>$kt){
+    $div = $ul->addLi()->setClass("igk-col fitw")->addDiv();
+    $t = $kt["t"];
+    $v = $kt["v"];
+    if ($s == "clinformAccessConnection"){
+        // igk_wln_e("the value : ".$v);
+    }
+    // $ctrl->_checkedItemConfig($div, $s, $t); 
+    $div->addLabel()->setAttribute("for", $s)->Content=__("lb.".$t);
+    $div->addToggleStateButton($s, "on", $v)->setClass("dispib");//->setAttribute("onchange", "ns_igk.ajx.get('{$u}&cache='+ns_igk.geti(event.target.checked),null,ns_igk.ajx.fn.no); return false;");
+
+}
+$li=$ul->addLi()->setClass("igk-col fitw igk-col-lg-3-1")->addDiv();
+$li->addLabel()->Content=R::ngets("lb.clcache_file_time");
+$li->addInput("clcache_file_time", "text", igk_getdv($app->Configs->cache_file_time, 3600))->setAttribute("style", "width:80px");
+$dv=$frm->addDiv()->setStyle("margin-top:2em");
+$dv->addBtn("btn_updatedebugmode", __("Update"));
+
+$v_cache_t=$box->addPanelBox()->addDiv();
+$ctrl->__init_cache_tools($v_cache_t);
+$ctrl->__init_log_tools($box->addPanelBox()->addDiv());
+$fx=$box->addPanelBox();
+$frm=$fx->addForm();
+$frm["action"]=$ctrl->getUri("resetconfig");
+$frm["class"]="dispib";
+$frm->addBtn("btn_resetconfig", R::ngets("btn.resetconfig"));
+$frm=$fx->addForm();
+$frm["action"]=$ctrl->getUri("conf_runCtrlConfig");
+$frm["class"]="dispib";
+$frm->addBtn("btn_runctrlconfig", R::ngets("btn.runctrlSetupConfig"));
+
+$fx->addABtn(igk_io_baseuri()."/Configs!Settings")->setclass("clsubmit igk-btn-default dispib")->Content=__("General Configuration");
+if(IGKServerInfo::IsLocal() || igk_is_conf_connected() || !igk_sys_env_production()){
+    $fx->add('a')->setClass("clsubmit igk-btn igk-btn-default dispib")->setAttribute("href", $ctrl->getUri("clearcache"))->setAttribute("onclick", "javascript: ns_igk.ajx.get(this.href+'&ajx=1', null,{src:this,complete:function(xhr){ ns_igk.ajx.fn.prepend_to(xhr,this.src.parentNode); }});  return false;")->Content=__("Clear cache");
+}

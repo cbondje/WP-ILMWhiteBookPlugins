@@ -1,0 +1,14 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!--App : DrStudio-->
+<!--Author : Charles A.D. BONDJE DOUE-->
+<!--version : 1.0-->
+<!--description : File generate by SVGDrawing2DEncoderVisitor-->
+<svg width="100" height="100" id="LayerDocument_60229148" viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<g id="Group_55027037" transform="matrix(0.6866236 -0.7270131 0.7270131 0.6866236 -18.81417 52.35233)">
+		<rect id="Rectangle_13541032" x="15" y="40" width="67" height="15" ></rect>
+		<rect id="Rectangle_59932304" x="88" y="40" width="10" height="15" ></rect>
+		<polygon id="CustomPolygon_50296274" points="9,40 9,55 0,48" ></polygon>
+	</g>
+	<path id="Path_23959161" d="M 75,28 C 75,28 90,43 90,47 90,51 76,62 76,62 L 69,54 C 69,54 78,50 77,45 76,40 66,35 66,35 " ></path>
+</svg>

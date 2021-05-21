@@ -1,0 +1,3 @@
+<?php
+igk_init_renderinglang($self);
+return true;

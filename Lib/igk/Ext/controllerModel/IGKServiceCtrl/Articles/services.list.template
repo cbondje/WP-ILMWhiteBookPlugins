@@ -1,0 +1,7 @@
+<div class="igk-col-view-box igk-service-box" *for="$raw"  >
+    <a *href="$raw->getServiceUri()">
+    <div class="igk-title">{{ $raw->Configs->clServiceName }}</div>  
+    <div></div>    
+    </a>
+</div>
+ 

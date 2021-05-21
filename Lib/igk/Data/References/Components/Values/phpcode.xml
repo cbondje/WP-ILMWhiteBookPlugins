@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PhpCode parent="" >
+<attr name="Ctrl" desc="controller in the execution context" />
+<attr name="Content" desc="php script " />
+</PhpCode>

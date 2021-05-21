@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameDialog><attr name="id" required="1"></attr><attr name="ctrl" required="1"></attr><attr name="closeuri" def-v="."></attr><attr name="reloadcallback"></attr></FrameDialog>

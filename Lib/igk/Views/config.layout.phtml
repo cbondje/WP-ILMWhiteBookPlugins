@@ -1,0 +1,43 @@
+<?php
+// @file: configuration.page.phtml
+// @author: C.A.D. BONDJE DOUE
+// @description:
+// @copyright: igkdev © 2020
+// @license: Microsoft MIT License. For more information read license.txt
+// @company: IGKDEV
+// @mail: bondje.doue@igkdev.com
+// @url: https://www.igkdev.com
+
+use function igk_resources_gets as __;
+ 
+igk_google_addfont($doc, "Roboto"); 
+igk_google_addfont($doc, "Material+Icons"); 
+ 
+
+
+$confframe=$ctrl->getConfigFrame(); 
+
+
+($cl=$t["class"]) && $cl->clear();
+$t["class"]="igk-cnf-page";
+$h=$t->addDiv()->setClass("header");
+$navbtn=$h->addToggleButton();
+$navbtn->Target="#android-menu";
+$navbtn->setClass("igk-sm-only igk-xsm-only floatr");
+$navbtn->ClassProperty="posab igk-col-sm-3-2";
+$navbtn->addBar(3);
+
+$android_menu=$h->addDiv();
+$android_menu->setId("android-menu");
+$android_menu["class"]="igk-mob-opts igk-sm-only";
+$android_menu["igk-data-menu"]=1;
+$android_menu["igk-data-menu-binding"]="#igk-cnf-menu";
+
+$h->addDiv()->setClass("floatr alignb")->Content= __("Welcome, {0}", igk_app()->Configs->admin_login);
+$h->addClearBoth();
+
+$t->addDiv()->add($confframe);
+$t->addClearBoth();
+$t->addDiv()->setClass("igk-cnf-footer")->addContainer()->addRow()->addCol("igk-col-3-3")->addDiv()->Content=IGK_COPYRIGHT;
+
+

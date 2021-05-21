@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<combobox><attr name="id" require="1" type="string" desc="set the id and name">
+<fr>identifiant du noeud</fr>
+</attr><attr name="tab" require="1" type="array" desc="array to view">
+<fr>list d'objet à afficher</fr>
+</attr><attr name="options" type="assoc array" desc="combobox options">
+<fr>Option d'affichage</fr>
+</attr></combobox>

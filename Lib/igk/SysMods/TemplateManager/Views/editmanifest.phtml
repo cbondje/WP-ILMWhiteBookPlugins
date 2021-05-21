@@ -1,0 +1,35 @@
+<?php
+// @file: editmanifest.phtml
+// @author: C.A.D. BONDJE DOUE
+// @description:
+// @copyright: igkdev © 2020
+// @license: Microsoft MIT License. For more information read license.txt
+// @company: IGKDEV
+// @mail: bondje.doue@igkdev.com
+// @url: https://www.igkdev.com
+
+$t->clearChilds();
+$doc->Title="Manifest";
+$row=$ctrl->Db->getPackageRow($ctrl->getParam("template://row_id"));
+if(!$row)
+    return;
+$dv=$t->addDiv();
+$dv["class"]="bar-header";
+$dv->addDiv()->addAJXA($ctrl->getUri('back_ajx'))->addSvgSymbol("back");
+$dv->addSectionTitle(4)->Content="Manifest : ".$row->clPackageName;
+$frm=$t->addDiv()->addForm();
+$frm["action"]=$ctrl->getUri("update_manifest&id=".$row->clId);
+$frm["igk-ajx-form"]=1;
+$man=$ctrl->getPackageManifest($row->clPackageName);
+$tab=$frm->addAJXTabControl();
+$tab["id"]="e-manifest-source";
+$uri=igk_create_component_callback("TabUriListener", function() use ($ctrl, $row){
+    return new TabUriListener($ctrl);
+});
+$uri->setRow($row);
+$tab->addTabPage("Delcaration", $uri->getUri("global"));
+$tab->addTabPage("Visual Assets", $uri->getUri("visualassets"));
+$tab->addTabPage("Categories", $uri->getUri("categories"));
+$bar=$frm->addDiv();
+$bar->addInput("btn.submit", "submit", R::ngets("btn.save"));
+?>

@@ -1,0 +1,7 @@
+<?php
+
+$l["Back to {0}"] = "Terug naar {0}";
+$l["Password"] = "Watchwoord";
+$l["Login"] = "Login";
+$l["err.page.5404"]="/!\\ SubDomain Configuratie";
+$l["msg.page.5404_1"]="<div>Administratie ontkennen <b> {0} </b><br /></div>";

@@ -1,0 +1,66 @@
+<?php
+// @file: subdomain.fc.pinc
+// @author: C.A.D. BONDJE DOUE
+// @description:
+// @copyright: igkdev © 2020
+// @license: Microsoft MIT License. For more information read license.txt
+// @company: IGKDEV
+// @mail: bondje.doue@igkdev.com
+// @url: https://www.igkdev.com
+
+///<summary></summary>
+///<param name="tab"></param>
+///<param name="t"></param>
+///<param name="data" default="null"></param>
+///<param name="mode" default="1"></param>
+
+use IGK\Resources\R;
+
+/**
+* 
+* @param mixed $tab
+* @param mixed $t
+* @param mixed $data the default value is null
+* @param mixed $mode the default value is 1
+*/
+function igk_subdomain_fc_inflate($tab, $t, $data=null, $mode=1){
+    $dv=$t->addDiv();
+    $i=$dv->addSLabelInput("clName", "text", $data ? $data->clName: null);
+    igk_html_set_ToolTip($i, R::ngets("tip.domain.name"));
+    $dv->addDiv()->setContent(IGK_HTML_SPACE);
+    $dv->addLabel('clCtrl')->Content=R::gets("Controller");
+    $sl=$dv->add("select");
+    $sl->setId("clCtrl");
+    $sl->setClass("igk-form-control")->setStyle("margin-bottom:1em");
+    $ctrl=$data ? $data->clCtrl: null;
+    foreach($tab["@base"] as  $v){
+        $opt=$sl->add("option");
+        $opt->Content=$v->Name;
+        $opt["value"]=$v->Name;
+        $opt["class"]="b";
+        if($v->Name == $ctrl){
+            $opt["selected"]="1";
+        }
+    }
+    $g=$tab["@templates"];
+    if(igk_count($g) > 0){
+        $sl->addDiv()->setContent(R::ngets("s.Templates"));
+        $rv=$sl->addDiv();
+        foreach($g as  $v){
+            $opt=$rv->add("option");
+            $opt->Content=$v;
+            $opt["value"]=$v;
+            $opt["class"]="t";
+            if($v == $ctrl){
+                $opt["selected"]="1";
+            }
+        }
+    }
+    $i=$dv->addSLabelInput("clView", "text", $data ? $data->clView: null);
+    $dv=$t->addDiv()->setStyle("margin-top:1.2em");
+    if($mode == 1)
+        $dv->addInput("btn_add", "submit", R::ngets("btn.add"))->setClass("igk-btn");
+    else{
+        $dv->addInput("btn_edit", "submit", R::ngets("btn.edit"))->setClass("igk-btn");
+    }
+} 

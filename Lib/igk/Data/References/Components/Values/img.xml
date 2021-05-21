@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Img parent=""><attr name="uri" required="1" type="string" desc="image uri location"></attr></Img>

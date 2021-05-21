@@ -19,7 +19,12 @@ class ConfigHandler implements Iterator, ArrayAccess{
     {
         $this->m_items = $item;
     }
-
+    public function __empty($i){ 
+        return empty($this->m_items);
+    }
+    public function __isset($i){        
+        return isset($this->m_items[$i]);
+    }
     public function offsetExists($offset) {
         return key_exists($offset, $this->m_items);
      }
@@ -40,7 +45,14 @@ class ConfigHandler implements Iterator, ArrayAccess{
 
     public function current() { 
         if ($this->_it){
-            return $this->m_items[$this->_it->keys[$this->_it->index]];
+            $t= $this->m_items[$this->_it->keys[$this->_it->index]];
+            // convert child to ConfigHandler
+            // ------------------------------
+            if (get_class($t) !== __CLASS__){
+                $t = new ConfigHandler((array)$t);
+                $this->m_items[$this->_it->keys[$this->_it->index]] = $t;
+            }
+            return $t;
         }
     }
 
@@ -52,7 +64,7 @@ class ConfigHandler implements Iterator, ArrayAccess{
 
     public function key() { 
         if ($this->_it){
-            return $this->_it->key;
+            return $this->_it->keys[$this->_it->index];
         }
     }
 

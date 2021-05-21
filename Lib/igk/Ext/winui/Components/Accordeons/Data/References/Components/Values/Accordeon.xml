@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Accordeon parent="" >
+	<attr name="info" desc="Extra accordeon information" fr="informations additionnelles" type="Array"/>
+</Accordeon>

@@ -1,0 +1,11 @@
+<DataDefinition TableName="tbtogo_caddy">
+<Column clName="clId" clType="Int" clTypeLength="25" clAutoIncrement="1" clIsPrimary="1"></Column>
+<Column clName="clCaddId" clType="VarChar" clTypeLength="50" clDescription="Caddy identifier"></Column>
+<Column clName="clUId" clType="Int" clTypeLength="25" clDescription="UserId identifier"></Column>
+<Column clName="clRef" clType="VarChar" clTypeLength="30" clDescription="Product reference"></Column>
+<Column clName="clTitle" clType="VarChar" clTypeLength="25" clDescription="Title of the product"></Column>
+<Column clName="clDescription" clType="Text" clTypeLength="25" clDescription="optional description of the product"></Column>
+<Column clName="clUnitPrice" clType="Float" clTypeLength="25" clDescription="unit price"></Column>
+<Column clName="clTva" clType="Float" clTypeLength="25" clDescription="Tva"></Column>
+<Column clName="clQte" clType="Int" clTypeLength="11" clDescription="Qte d"></Column>
+</DataDefinition>

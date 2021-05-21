@@ -1,0 +1,26 @@
+<?php
+// config server info
+$ctrl->setSelectedConfigCtrl(null);
+$box = igk_html_ctrl_view_config($ctrl, $cnf_n, "title.frameworkInfo", null);
+
+$cnf=$ctrl->getConfigNode()->clearChilds();
+
+// +| VIEW SERVER Information
+$dv=$cnf->addDiv()->addPanelBox();
+$dv->addSectionTitle()->Content="\$_SERVER";
+$tb=$dv->tablehost()->table()->header("Name", "Value");
+foreach($_SERVER as $k=>$v){
+	$r=$tb->addTr();
+	$r->addTd()->Content=$k;
+	$r->addTd()->Content=$v;
+}
+// +| VIEW php.ini Informations 
+$dv=$cnf->addDiv();
+$dv->addSectionTitle()->Content="php.ini";
+$g = ini_get_all();
+$tb=$dv->panelbox()->tablehost()->table()->header("Name", "Value");
+foreach($g as $k=>$v){
+	$r=$tb->addTr();
+	$r->addTd()->Content=$k;
+	$r->addTd()->Content=$v["local_value"];	
+}

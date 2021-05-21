@@ -1,0 +1,495 @@
+<?php
+// @file: installerMiddleware.pinc
+// @author: C.A.D. BONDJE DOUE
+// @description:
+// @copyright: igkdev © 2020
+// @license: Microsoft MIT License. For more information read license.txt
+// @company: IGKDEV
+// @mail: bondje.doue@igkdev.com
+// @url: https://www.igkdev.com
+namespace IGK\System\Installers;
+
+use Exception;
+use IGKHtmlReader;
+use IGKIO;
+
+use function igk_resources_gets as __;
+///<summary>Represente class: InstallerActionMiddleWare</summary>
+/**
+* Represente InstallerActionMiddleWare class
+*/
+class InstallerActionMiddleWare{
+    private $_next;
+    private $_service;
+    ///<summary></summary>
+    /**
+    * 
+    */
+    protected function abort(){
+        // igk_wln("aborting : ".get_class($this));
+    }
+    ///<summary></summary>
+    ///<param name="list"></param>
+    /**
+    * 
+    * @param mixed $list
+    */
+    public static function AbortAction($list){
+        $c=$list[0];
+        $_service=(object)array("Success"=>0, "Start"=>0, "List"=>$list, "Current"=>0);
+        foreach($list as $k){
+            $k->abort();
+        }
+    }
+    ///<summary></summary>
+    /**
+    * 
+    */
+    public function getMessage(){
+        return get_class($this);
+    }
+    ///<summary></summary>
+    /**
+    * 
+    */
+    public function getService(){
+        return $this->_service;
+    }
+    ///<summary></summary>
+    /**
+    * 
+    */
+    protected final function next(){
+        if($this->_next){
+            $this->_service->Current++;
+            $this->_next->invoke();
+        }
+    }
+    ///<summary></summary>
+    ///<param name="list"></param>
+    ///<param name="index"></param>
+    ///<param name="service" default="null"></param>
+    /**
+    * 
+    * @param mixed $list
+    * @param mixed $index
+    * @param mixed $service the default value is null
+    */
+    public static function Run($list, $index, $service=null){
+        $c=$list[$index]; 
+        $_service=(object)array(
+            "Success"=>0,
+            "Start"=>$index,
+            "List"=>$list,
+            "Current"=>$index,
+            "BaseDir"=> $service ? $service->BaseDir: igk_io_basedir(),
+            "LibDir"=> $service ? $service->LibDir: IGK_LIB_DIR,
+            "CoreZip"=> $service ? igk_getv($service, "CoreZip") : null,
+            "CacheDir"=>$service && !empty($cd=$service->CacheDir) ? $cd: igk_io_cachedir(),
+            "Version"=>IGK_VERSION,
+            "Listener"=>$service
+        );
+        while($index < (count($list)-1)){
+            $list[$index]->_service=$_service;
+            $list[$index]->_next=$list[$index + 1];
+            $index++;
+        }
+        $list[$index]->_service=$_service;
+        $c->invoke();
+        return $_service->Success;
+    }
+}
+///<summary>Represente class: BalaffonInstallerMiddelWare</summary>
+/**
+* Represente BalaffonInstallerMiddelWare class
+*/
+class BalafonInstallerMiddelWare extends InstallerActionMiddleWare{
+    ///<summary></summary>
+    /**
+    * 
+    */
+    public function getMessage(){
+        return "start installer";
+    }
+    ///<summary></summary>
+    /**
+    * 
+    */
+    public function invoke(){
+        $service=$this->getService();
+        try {
+            $this->next();
+        }
+        catch(Exception $ex){
+            $this->getService()->Success=false;
+        }
+        if($this->getService()->Success){
+            $service->Listener->write(__("Success"));
+        }
+        else{
+            $aborting=new InstallerMiddleWareActions();
+            for($j=$service->Current; $j>=$service->Start; --$j){
+                $aborting->add($service->List[$j]);
+            }
+            $aborting->abort();
+        }
+    }
+}
+///<summary>Represente class: ClearCacheMiddleWare</summary>
+/**
+* Represente ClearCacheMiddleWare class
+*/
+class ClearCacheMiddleWare extends InstallerActionMiddleWare{
+    ///<summary></summary>
+    /**
+    * 
+    */
+    protected function abort(){}
+    ///<summary></summary>
+    /**
+    * 
+    */
+    public function getMessage(){
+        return __("Clear cache ...");
+    }
+    ///<summary></summary>
+    /**
+    * 
+    */
+    public function invoke(){
+        if(is_dir($cachedir=$this->getService()->CacheDir)){
+            IGKIO::RmDir($cachedir);
+        }
+        $this->next();
+    }
+}
+///<summary>Represente class: ErrorHandleMiddleWare</summary>
+/**
+* Represente ErrorHandleMiddleWare class
+*/
+class ErrorHandleMiddleWare extends InstallerActionMiddleWare{
+    ///<summary></summary>
+    /**
+    * 
+    */
+    public function invoke(){
+        try {
+            $this->next();
+        }
+        catch(Exception $ex){
+            $this->getService()->Success=0;
+        }
+    }
+}
+///<summary>Represente class: ExtractLibaryMiddleWare</summary>
+/**
+* Represente ExtractLibaryMiddleWare class
+*/
+class ExtractLibaryMiddleWare extends InstallerActionMiddleWare{
+    ///<summary></summary>
+    /**
+    * 
+    */
+    protected function abort(){
+        $lib=$this->getService()->LibDir;
+        if(is_dir($lib)){
+            IGKIO::RmDir($lib);
+        }
+    }
+    ///<summary></summary>
+    /**
+    * 
+    */
+    public function getMessage(){
+        return __("Extract Core Library");
+    }
+    ///<summary></summary>
+    /**
+    * 
+    */
+    public function invoke(){
+        if(!file_exists($zip=$this->getService()->CoreZip)){
+            return;
+		}
+        $s=igk_zip_unzip_filecontent($zip, "manifest.xml");
+        if(empty($s))
+            return;
+        $xml=IGKHtmlReader::Load($s, "xml");
+        $obj=igk_createobj();
+        igk_conf_load($obj, $xml);
+        $manifest=igk_conf_get($obj, "manifest");
+        if(igk_conf_get($manifest, "appName") != IGK_PLATEFORM_NAME){
+            return;}
+        $version=igk_conf_get($manifest, "version");
+        $lib=$this->getService()->LibDir;
+        IGKIO::CreateDir($lib);
+        if(!igk_zip_unzip(igk_html_uri($zip), $lib."/../../", "#^Lib/igk#")){
+            return;
+        }
+        $this->next();
+    }
+}
+///<summary>Represente class: FailedMiddleWare</summary>
+/**
+* Represente FailedMiddleWare class
+*/
+class FailedMiddleWare extends InstallerActionMiddleWare{
+    ///<summary></summary>
+    /**
+    * 
+    */
+    public function invoke(){
+        $this->getService()->Success=1;
+    }
+}
+///<summary>Represente class: InstallerEventMessageMiddleWare</summary>
+/**
+* Represente InstallerEventMessageMiddleWare class
+*/
+class InstallerEventMessageMiddleWare extends InstallerActionMiddleWare{
+    var $host;
+    ///<summary></summary>
+    ///<param name="host"></param>
+    /**
+    * 
+    * @param mixed $host
+    */
+    public function __construct($host){
+        $this->host=$host;
+    }
+    ///<summary></summary>
+    /**
+    * 
+    */
+    protected function abort(){
+        $msg=$this->host->getMessage();
+        igk_flush_write("aborting ... ". $msg);
+        igk_flush_data();
+    }
+    ///<summary></summary>
+    /**
+    * 
+    */
+    public function invoke(){
+        $msg=$this->host->getMessage();
+        igk_flush_write($msg);
+        igk_flush_data();
+        $this->next();
+    }
+}
+///<summary>Represente class: MaintenaceLibMiddleWare</summary>
+/**
+* Represente MaintenaceLibMiddleWare class
+*/
+class MaintenaceLibMiddleWare extends InstallerActionMiddleWare{
+    ///<summary></summary>
+    /**
+    * 
+    */
+    private function __unlock(){
+        $bdir=$this->getService()->BaseDir;
+        if(!file_exists($lock=$bdir."/maintenance.lock")){
+            return;}
+        unlink($bdir."/index.php");
+        unlink($bdir."/.htaccess");
+        $restore=[$bdir."/.lock.index.php"=>$bdir."/index.php", $bdir."/.lock.htaccess"=>$bdir."/.htaccess"];
+        foreach($restore as $k=>$v){
+            if(file_exists($k)){
+                rename($k, $v);
+            }
+        }
+        unlink($lock);
+    }
+    ///<summary></summary>
+    /**
+    * 
+    */
+    public function abort(){
+        $this->__unlock();
+    }
+    ///<summary></summary>
+    /**
+    * 
+    */
+    public function getMessage(){
+        return __("put site on 'maintenance mode'");
+    }
+    ///<summary></summary>
+    /**
+    * 
+    */
+    public function invoke(){
+        $bdir=$this->getService()->BaseDir;
+        if(file_exists($lock=$bdir."/maintenance.lock")){
+            return;}
+        igk_io_w2file($lock, '1');
+        $rnlist=[$bdir."/index.php"=>$bdir."/.lock.index.php", $bdir."/.htaccess"=>$bdir."/.lock.htaccess", ];
+        foreach($rnlist as $k=>$v){
+            rename($k, $v);
+        }
+        igk_io_w2file($bdir."/index.php", igk_io_read_allfile(IGK_LIB_DIR."/Default/Views/maintenance.mode.phtml"));
+        igk_io_w2file($bdir."/.htaccess", <<<EOF
+<IfModule rewrite_module>
+RewriteEngine On
+#redirect all to index.php
+RewriteCond "%{REQUEST_FILENAME}" !-f
+RewriteCond "%{REQUEST_FILENAME}" !-d
+RewriteRule ^(/)?(.)*$  "index.php" [QSA,L]
+</IfModule>
+EOF
+        );
+        $this->next();
+        if($this->getService()->Success){
+            $this->getService()->Listener->write("unlock 'maintenance mode'");
+            $this->__unlock();
+        }
+    }
+}
+///<summary>Represente class: RenameLibaryMiddleWare</summary>
+/**
+* Represente RenameLibaryMiddleWare class
+*/
+class RenameLibaryMiddleWare extends InstallerActionMiddleWare{
+    ///<summary></summary>
+    /**
+    * 
+    */
+    public function abort(){
+        $libdir=dirname($this->getService()->LibDir)."/__tempigk";
+        if(is_dir($libdir)){
+            rename($libdir, dirname($libdir)."/igk");
+        }
+    }
+    ///<summary></summary>
+    /**
+    * 
+    */
+    public function getMessage(){
+        return "rename library";
+    }
+    ///<summary></summary>
+    /**
+    * 
+    */
+    public function invoke(){
+        $libdir=$this->getService()->LibDir;
+        if(is_dir($libdir)){
+            rename($libdir, dirname($libdir)."/__temp".basename($libdir));
+        }
+        $this->next();
+    }
+}
+///<summary>Represente class: SuccessMiddleWare</summary>
+/**
+* Represente SuccessMiddleWare class
+*/
+class SuccessMiddleWare extends InstallerActionMiddleWare{
+    ///<summary></summary>
+    /**
+    * 
+    */
+    protected function abort(){}
+    ///<summary></summary>
+    /**
+    * 
+    */
+    public function getMessage(){
+        return __("welldone");
+    }
+    ///<summary></summary>
+    /**
+    * 
+    */
+    public function invoke(){
+        $srv=$this->getService();
+        if(is_dir($libdir=dirname($this->getService()->LibDir)."/__tempigk")){
+            if(!is_dir($vdir=dirname($libdir)."/igk.bck".$srv->Version)){
+                $srv->Listener->write(__("Backup previous version"));
+                rename($libdir, $vdir);
+                igk_zip_folder($vdir.".zip", $vdir, "Lib/igk");
+                IGKIO::RmDir($vdir);
+                igk_io_w2file(dirname($libdir)."/backup.info", $srv->Version);
+            }
+            else{
+                IGKIO::RmDir($libdir);
+            }
+        }
+        $srv->Success=1;
+        $this->next();
+    }
+}
+///<summary>Represente class: InstallerMiddleWareActions</summary>
+/**
+* Represente InstallerMiddleWareActions class
+*/
+class InstallerMiddleWareActions{
+    private $_list;
+    var $BaseDir;
+    var $CacheDir;
+    var $LibDir;
+    ///<summary></summary>
+    /**
+    * 
+    */
+    public function __construct(){
+        $this->_list=array();
+        $this->_current=array();
+    }
+    ///<summary></summary>
+    /**
+    * 
+    */
+    public function abort(){
+        if(($tc=count($this->_list))<=0)
+            return;
+        InstallerActionMiddleWare::AbortAction($this->_list, 0);
+    }
+    ///<summary></summary>
+    ///<param name="middle"></param>
+    /**
+    * 
+    * @param mixed $middle
+    */
+    public function add($middle){
+        if(!is_object($middle)){
+            return;}
+        if(get_class($middle) == InstallerEventMessageMiddleWare::Class)
+            return;
+        if($this->isEventStream()){
+            $this->_list[]=new InstallerEventMessageMiddleWare($middle);
+        }
+        $this->_list[]=$middle;
+    }
+    ///<summary></summary>
+    /**
+    * 
+    */
+    public function isEventStream(){
+        return igk_server()->HTTP_ACCEPT == "text/event-stream";
+    }
+    ///<summary></summary>
+    /**
+    * 
+    * @return mixed
+    */
+    public function process(){
+        if(($tc=count($this->_list))<=0)
+            return false;
+        if($this->Success=InstallerActionMiddleWare::Run($this->_list, 0, $this)){
+            $this->write(__("Process Complete"));
+        }
+        return $this->Success;
+    }
+    ///<summary></summary>
+    ///<param name="msg"></param>
+    /**
+    * 
+    * @param mixed $msg
+    */
+    public function write($msg){
+        if($this->isEventStream()){
+            igk_flush_write($msg);
+            igk_flush_data();
+        }
+    }
+}

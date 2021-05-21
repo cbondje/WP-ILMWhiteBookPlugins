@@ -1,0 +1,770 @@
+<?php
+// @file: .mysql.pinc
+// @author: C.A.D. BONDJE DOUE
+// @description:
+// @copyright: igkdev © 2020
+// @license: Microsoft MIT License. For more information read license.txt
+// @company: IGKDEV
+// @mail: bondje.doue@igkdev.com
+// @url: https://www.igkdev.com
+
+use IGK\Controllers\BaseController;
+
+use function igk_resources_gets as __;
+///used to get relation </summary>
+/**
+*/
+function get_relation($mysql, $tname, $clname, $dbname=null){
+    $r=$dbname == null ? igk_mysql_db_selected_db($mysql): $dbname;
+    $mysql->selectdb("information_schema");
+    $h=$mysql->sendQuery("SELECT * FROM `KEY_COLUMN_USAGE` WHERE `TABLE_NAME`='".igk_db_escape_string($tname)."' AND `TABLE_SCHEMA`='".igk_db_escape_string($r)."' AND `COLUMN_NAME`='".igk_db_escape_string($clname)."' AND `REFERENCED_TABLE_NAME`!=''");
+    $mysql->selectdb($r);
+    return $h->getRowAtIndex(0);
+}
+
+///<summary>Retrieve column information</summary>
+///<param name="row"></param>
+///<param name="v"></param>
+///<param name="table_n"></param>
+///<param name="mysql"></param>
+/**
+* Retrieve column information
+* @param mixed $row
+* @param mixed $v
+* @param mixed $table_n
+* @param mixed $mysql
+*/
+function igk_api_get_columninfo($row, $v, $table_n, $mysql){
+    $cl=$row->addNode("Column");
+    $cl["clName"]=$v->Field;
+    $tab=array();
+    $ctype = trim($v->Type);
+    preg_match_all("/^((?P<type>([^\(\))]+)))\\s*((\((?P<length>([0-9]+))\)){0,1}|(.+)?)$/i", trim($v->Type), $tab);
+    //igk_wln("type ::::". $v->Type. " = ".$tab["type"][0]);
+    $cl["clType"]=igk_balafon_mysql_datatype(igk_getv($tab["type"], 0, "Int"));
+    if (strtolower($cl["clType"]) =="enum"){
+        $cl["clEnumValues"] = substr($ctype, strpos($ctype, "(")+1,-1); 
+    }else{
+        $cl["clTypeLength"]=igk_getv($tab["length"], 0, 0);
+    }
+    if($v->Default)
+        $cl["clDefault"]=$v->Default;
+    if($v->Comment){
+        $cl["clDescription"]=$v->Comment;
+    }
+    $cl["clAutoIncrement"]=preg_match("/auto_increment/i", $v->Extra) ? "True": null;
+    $cl["clNotNull"]=preg_match("/NO/i", $v->Null) ? "True": null;
+    $cl["clIsPrimary"]=preg_match("/PRI/i", $v->Key) ? "True": null;
+    $cl["clIsUnique"]=preg_match("/UNI/i", $v->Key) ? "True": null;
+    if(preg_match("/(MUL|UNI)/i", $v->Key)){
+        $rel=get_relation($mysql, $table_n, $v->Field);
+        if($rel){
+            $cl["clLinkType"]=$rel->REFERENCED_TABLE_NAME;
+        }
+    }
+    if (!empty($v->Extra) && (($cpos = strpos($v->Extra, "on update "))!==false)){
+        $c = trim(substr($v->Extra, $cpos+10));
+        if (in_array($c, ["CURRENT_TIMESTAMP"]))
+            $cl["clUpdateFunction"] = "Now()";
+    }
+    //+ insert and update function ignored
+    return $cl;
+}
+///<summary></summary>
+/**
+* 
+*/
+function igk_api_get_mysql_doc(){
+    $doc=igk_get_document("sysapp:mysql", true);
+    $doc->Title="MysQL Utility - [BALFAFON]";
+    return $doc;
+}
+///<summary></summary>
+///<param name="api"></param>
+///<param name="row"></param>
+///<param name="table_n"></param>
+///<param name="u"></param>
+///<param name="mysql"></param>
+///<param name="db" default="null"></param>
+///<param name="entries" default="null"></param>
+///<param name="tables" default="null"></param>
+/**
+* 
+* @param mixed $api
+* @param mixed $row
+* @param mixed $table_n
+* @param mixed $u
+* @param mixed $mysql
+* @param mixed $db the default value is null
+* @param mixed $entries the default value is null
+* @param mixed $tables the default value is null
+*/
+function igk_api_get_sync_definition($api, $row, $table_n, $u, $mysql, $db=null, $entries=null, $tables=null){
+    $tt=$mysql->sendQuery("SELECT Count(*) FROM `".$table_n."`;");
+    $b=$tt->Columns[0]->name;
+    $count=$tt->Rows[0]->$b;
+    $row["Entries"]=$count;
+    $tt=$mysql->sendQuery("SHOW FULL COLUMNS FROM `".$table_n."`;");
+    $links=array();
+    $auto=null;
+    foreach($tt->Rows as $v){
+        $cl=igk_api_get_columninfo($row, $v, $table_n, $mysql);
+        if($cl["clLinkType"]){
+            $lnk=$cl["clLinkType"];
+            $g=igk_getv($links, $lnk, null);
+            if($g == null){
+                $g=array();
+            }
+            $g[]=array("Column"=>$v->Field, "Table"=>$lnk);
+            $links[$lnk]=$g;
+        }
+        if($cl["clAutoIncrement"]){
+            $auto=$v->Field;
+        }
+    }
+    $g=array("Links"=>$links, "auto"=>$auto, "count"=>$count);
+    if($tables !== null){
+        $tables->list[$table_n]=$g;
+    }
+    if(($entries != null) && ($count > 0)){
+        igk_api_sync_def_evaluate_entries($entries, $table_n, $mysql, $db, $tables !== null ? $tables: (object)array("list"=>array($table_n=>$g), "value"=>array()));
+    }
+}
+///<summary></summary>
+///<param name="api"></param>
+///<param name="row"></param>
+///<param name="table_n"></param>
+///<param name="mysql"></param>
+///<param name="tinfo" default="null"></param>
+///<param name="entries" default="null"></param>
+/**
+* 
+* @param mixed $api
+* @param mixed $row
+* @param mixed $table_n
+* @param mixed $mysql
+* @param mixed $tinfo the default value is null
+* @param mixed $entries the default value is null
+*/
+function igk_api_get_table_definition($api, $row, $table_n, $mysql, $tinfo=null, $entries=null){
+    $tt=$mysql->sendQuery("SELECT Count(*) FROM `".$table_n."`;");
+    if($tt->RowCount == 0)
+        return;
+    $b=igk_getv($tt->Columns[0], "name");
+    $count=$tt->Rows[0]->$b;
+    $row["Entries"]=$count;
+    $tt=$mysql->sendQuery("SHOW FULL COLUMNS FROM `".$table_n."`;");
+    foreach($tt->Rows as $v){
+        $cl=igk_api_get_columninfo($row, $v, $table_n, $mysql);
+        if($tinfo)
+            $tinfo[$v->Field]=new IGKDbColumnInfo($cl->Attributes->ToArray());
+    }
+    if($entries && $count > 0){
+        $n=$entries->addXmlNode("Rows")->setAttribute("For", $table_n);
+        foreach($mysql->select($table_n)->Rows as $v){
+            $n->addXmlNode("Row")->setAttributes($v);
+        }
+    }
+}
+///<summary></summary>
+///<param name="api"></param>
+/**
+* 
+* @param mixed $api
+*/
+function igk_api_mysql_about($api){
+    $doc=igk_get_document("sysapp:mysql", true);
+    $doc->Title="MySQL Utility - About - [BALAFON]";
+    $bbox=$doc->body->addBodyBox();
+    $dv=$bbox->addDiv()->addContainer();
+    $dv->addDiv()->addSectionTitle(4)->Content=R::gets("MySQL Utility Api Service");
+    $ul=$dv->addDiv()->addUl();
+    $ul->addLi()->Content=IGK_AUTHOR;
+    $ul->addLi()->Content="Version :".IGKMySQLUtilityConstant::VERSION;
+    $doc->RenderAJX();
+}
+///<summary></summary>
+///<param name="api"></param>
+///<param name="tbname"></param>
+///<param name="name"></param>
+/**
+* 
+* @param object $api controller
+* @param mixed $tbname table name
+* @param mixed $name name
+*/
+function igk_api_mysql_addcolumn($api, $tbname, $name){
+    $doc=igk_api_get_mysql_doc();
+    $ad=igk_get_data_adapter("MYSQL") ?? igk_die("No MYSQL Found");
+    $bbox=$doc->body->addBodyBox();
+    $t=$bbox->clearChilds()->addDiv();
+    if($ad->connect()){
+        $g=$ad->addColumn($tbname, $name);
+        if($ad->getHasError()){
+            $t->addDiv()->setClass("igk-danger")->Content="Some error : ".$ad->getError();
+        }
+        else{
+            $t->addObData(function() use ($g){igk_wln($g);
+            });
+        }
+        $ad->close();
+    }
+    $doc->RenderAJX();
+    igk_exit();
+}
+///<summary>check the database structure </summary>
+/**
+* check the database structure
+* @param object $api reference
+*/
+function igk_api_mysql_check_data_structure($api, $ignore_notused=0, $exit=1){
+    $tconfig = igk_api_mysql_get_config_data_schema($api, false, (object)array("check"=>1));
+    if (!isset($tconfig["tbigk_users"])){
+        igk_die("not found");
+    } 
+ 
+
+    $tdb =  igk_api_mysql_get_data_schema($api, false, (object)array("check"=>1));
+
+
+    $rep=igk_createNode("data_response");
+    $err=$rep->add("error-message");
+    $err->setCallback("getIsVisible", "return \$this->ChildCount>0;");
+    $notused=$rep->add("TableNotUsed")->setCallback("getIsVisible", "return \$this->ChildCount>0;");
+    $ubind=array_fill_keys(array_keys($tdb), 1);
+    $tcount=0;
+    foreach($tconfig as $k=>$v){
+        $tbname=$k;
+        if(!isset($tdb[$k])){
+            $err->add("msg")->Content="Table $k doesn't exists!!!";
+            continue;
+        }
+        $v_b=$v->info;
+        $v_testb=$tdb[$k]->tinfo;
+        $v_err=1;
+        foreach($v_b as $vv){
+            if(!isset($v_testb[$vv->clName])){
+                $err->add("msg")->Content="Column [{$tbname}::{$vv->clName}] Not found";
+                $v_err=0;
+                continue;
+            }
+            $v_btest=$v_testb[$vv->clName];
+            unset($v_testb[$vv->clName]);
+            $s_type = strtolower($vv->clType);
+            $t_type = strtolower($v_btest->clType);
+            if (($s_type != $t_type) && !(($s_type == "date") && in_array($t_type, ["datetime"])) ){
+
+               
+
+                $err->add("msg")->Content=
+                        sprintf("Column [%s::%s] type not --- match. Expected %s but %s found",
+                        $tbname, $vv->clName,
+                        $vv->clType,
+                        $v_btest->clType
+                    );
+                    // igk_wln_e("test:", $v_btest);
+                // "Column [{$tbname}::{$vv->clName}] Type Not match. Expected {$vv->clType} but {$v_btest->clType} found";
+                $v_err=0;
+            }
+            else if(igk_db_is_typelength($vv->clType) && ($vv->clTypeLength != $v_btest->clTypeLength)){
+                $err->add("msg")->Content="Column [{$tbname}::{$vv->clName}] Type length not match. Expected {$vv->clTypeLength} but {$v_btest->clTypeLength} found";
+                $v_err=0;
+            }
+            if(strtolower($vv->clLinkType) != strtolower($v_btest->clLinkType)){
+                $err->add("msg")->Content=
+                        sprintf("Column [%s::%s] ooo Linktype not match. Expected [%s] but [%s] found",
+                        $tbname, $vv->clName,
+                        $vv->clLinkType,
+                        $v_btest->clLinkType
+                    );
+                //"/!\\ Column Error: [{$tbname}::{$vv->clName}] Linktype not match. Expected [{$vv->clLinkType}] but [{$v_btest->clLinkType}] found!!!";
+                $v_err=0;
+            }
+        }
+        if(count($v_testb) > 0){
+            foreach($v_testb as $r){
+                $err->add("msg")->Content="/!\\ Extra column {$k}.`".$r->clName."` found ";
+            }
+        }
+        
+        if($v_err){
+            unset($ubind[$tbname]);
+        }
+        $tcount++;
+    }
+    if (!$ignore_notused){
+        foreach($ubind as $k=>$v){
+            $notused->addNode("Item")->Content=$k;
+        }
+    }
+    if($err->ChildCount > 0)
+        $rep["HasError"]=1;
+    igk_wl($rep->RenderXML((object)["xmldefinition"=>1]));
+    if ($exit){
+        igk_exit();
+    }
+}
+///<summary></summary>
+///<param name="api"></param>
+///<param name="ctrlname"></param>
+/**
+* 
+* @param mixed $api
+* @param mixed $ctrlname
+*/
+function igk_api_mysql_ctrl_gen_schema($api, $ctrlname){
+    if(!igk_is_conf_connected()){
+        igk_ilog("'admin must be connected in order to generate data schema");
+        return 0;
+    }
+    $rep=igk_createxmlnode(IGK_SCHEMA_TAGNAME);
+    $rep["Date"]=date('Y-m-d');
+    $rep["Version"]="1.0";
+    $n=igk_html_node_noTagNode();
+    $rep->add($n);
+    $e=$rep->add("Entries");
+    $e->setCallback("getIsVisible", "return \$this->ChildCount>0;");
+    $c=igk_getctrl($ctrlname);
+    $tables=igk_db_get_ctrl_tables($c);
+    if($c->Db->connect()){
+        $rep->addXmlNode("class")->setContent(get_class($c));
+        $rep->addXmlNode("table")->setAttribute("count", igk_count($tables));
+        $mysql=$c->Db->Ad;
+        foreach($tables as $v){
+            $row=$n->addNode(IGKDbSchemas::DATA_DEFINITION)->setAttributes(array("TableName"=>$v));
+            $tt=$mysql->sendQuery("SHOW FULL COLUMNS FROM `".$v."`;");
+            foreach($tt->Rows as $s){
+                igk_api_get_columninfo($row, $s, $v, $mysql);
+            }
+            $tt=$c->Db->select($v);
+            if($tt->RowCount > 0){
+                $erow=$e->addNode("Rows");
+                $erow["For"]=$v;
+                foreach($tt->Rows as $l){
+                    $erow->addNode("Row")->setAttributes($l);
+                }
+            }
+        }
+        $c->Db->close();
+    }
+    $rep->renderXML();
+    return 1;
+}
+///<summary></summary>
+///<param name="api"></param>
+///<param name="tbname"></param>
+/**
+* 
+* @param mixed $api
+* @param mixed $tbname
+*/
+function igk_api_mysql_extract($api, $tbname){
+    $c=igk_get_data_adapter("MYSQL");
+    $c->connect();
+    $r=$c->select($tbname);
+    $c->close();
+    $q=igk_view_args("query_options");
+    if(!$q){
+        $q=array("fmt"=>"csv");
+    }
+    switch($q["fmt"]){
+        case "xml":
+        $n=igk_createxmlnode("Rows");
+        $n["For"]=$tbname;
+        $tnames=array();
+        foreach($r->Columns as $col){
+            $tnames[]=$col->name;
+        }
+        foreach($r->Rows as $nn){
+            $c=$n->add("Row");
+            foreach($tnames as $m){
+                $c[$m]=$nn->$m;
+            }
+        }
+        $n->renderXML();
+        break;
+        case "json":
+        $o=igk_createobj();
+        $o->$tbname=[];
+        foreach($r->Rows as $nn){
+            $o->$tbname[]=$nn;
+        }
+        igk_json(json_encode($o));
+        break;
+        case "csv":default: header("Content-Type:text/plain");
+        $sep="";
+        foreach($r->Columns as $col){
+            echo $sep;
+            echo $col->name;
+            $sep=",";
+        }
+        echo "\n";
+        foreach($r->Rows as $n){
+            $sep="";
+            foreach($n as $t){
+                echo $sep;
+                echo IGKCSVDataAdapter::GetValue($t);
+                $sep=",";
+            }
+            echo "\n";
+        }
+        break;
+    }
+    igk_exit();
+}
+///<summary>get balafon mysql data schema from configuration</summary>
+///<param name="api"></param>
+///<param name="render" default="1"></param>
+///<param name="param" default="null"></param>
+/**
+* get balafon mysql data schema from configuration
+* @param mixed $api
+* @param mixed $render the default value is 1
+* @param mixed $param the default value is null
+*/
+function igk_api_mysql_get_config_data_schema($api, $render=1, $param=null){
+    $ctrl=$api->App->getControllerManager()->getControllers();
+    $rep=igk_createxmlnode(IGK_SCHEMA_TAGNAME);
+    $uri=igk_getv(igk_getv(igk_get_ns(), "ns"), "igk");
+    $rep->setAttribute("xmlns:igk", $uri);
+    $msg=$rep->add("warning-message");
+    $err=$rep->add("error-message");
+    $not=$rep->add("notice-message");
+    $msg->setCallback("getIsVisible", "return \$this->ChildCount>0;");
+    $not->setCallback("getIsVisible", "return \$this->ChildCount>0;");
+    $err->setCallback("getIsVisible", "return \$this->ChildCount>0;");
+    $tables=array();
+    $count=0; 
+    foreach($ctrl as $v){
+        if($v->getCanInitDb() && ($v->getDataAdapterName() == IGK_MYSQL_DATAADAPTER)){
+            $b = BaseController::Invoke($v, "getUseDataSchema");
+// igk_wln_e("data : ", $b);
+            if(!$b){ // $v->getUseDataSchema()){
+              
+                $tname=$v->getDataTableName();
+                $tinfo=$v->getDataTableInfo();
+                if(!empty($tname) && ($tinfo !== null)){
+                    if(isset($tables[$tname])){
+                        $msg->add("warning")->Content="Table $tname already found. [".$v->Name. "] get from ".$tables[$tname]->ctrl->Name. " no schema";
+                        continue;
+                    }
+                    $tables[$tname]=(object)array("info"=>$tinfo, "ctrl"=>$v);
+                    $row=$rep->addNode(IGKDbSchemas::DATA_DEFINITION)->setAttributes(array("TableName"=>$tname, "igk:ctrlName"=>$v->Name));
+                    foreach($tinfo as $vv){
+                        $cl=$row->addNode("Column");
+                        $cl->setAttributes($vv);
+                    }
+                    $count++;
+                } 
+            }
+            else{
+                $data = igk_db_load_data_schemas($v->getDataSchemaFile(), $v);
+                $tschema = igk_getv($data, "tables");
+                if($tschema){
+                    foreach($tschema as $ck=>$cv){
+                        if(isset($tables[$ck])){
+                            $msg->add("msg")->Content="Table $ck already found. [".$v->Name. "] get from ".$tables[$ck]->ctrl->Name." with schema";
+                            continue;
+                        }
+                        $row=$rep->addNode(IGKDbSchemas::DATA_DEFINITION)->setAttributes(array("TableName"=>$ck, "igk:ctrlName"=>$v->Name));
+                        $row["clDescription"]=igk_getv($cv, "clDescription");
+                        $cinfo=igk_getv($cv, "ColumnInfo");
+                        $tables[$ck]=(object)array("info"=>$cinfo, "ctrl"=>$v);
+                        foreach($cinfo as $ckv){
+                            $cl=$row->addNode("Column");
+                            $cl->setAttributes($ckv);
+                        }
+                        $count++;
+                    }
+                }
+            }
+        }
+    }
+    $rep["tableCount"]=$count;
+    $rep["Version"]="1.0";
+    $rep["Warning"]=$msg->ChildCount > 0 ? $msg->ChildCount: null;
+    $rep["Notice"]=$not->ChildCount > 0 ? $not->ChildCount: null;
+    $rep["Error"]=$err->ChildCount > 0 ? $err->ChildCount: null;
+    if($render){
+        $rep->RenderXML();
+        igk_exit();
+    }
+    $check=igk_getv($param, "check");
+    if($check)
+        return $tables;
+    return $rep;
+}
+///<summary></summary>
+///<param name="api"></param>
+///<param name="render" default="1"></param>
+///<param name="param" default="null"></param>
+/**
+* 
+* @param mixed $api
+* @param mixed $render the default value is 1
+* @param mixed $param the default value is null
+*/
+function igk_api_mysql_get_data_schema($api, $render=1, $param=null){
+    $rep=igk_createxmlnode(IGK_SCHEMA_TAGNAME);
+    $rep["Date"]=date('Y-m-d');
+    $rep["Version"]="1.0";
+    $mysql=igk_get_data_adapter(IGK_MYSQL_DATAADAPTER, true);
+    $tables=array();
+    if($mysql->connect()){
+        $mysql->selectdb($api->App->Configs->db_name);
+        $r=$mysql->listTables();
+        if($r){
+            $n=$r->Columns[0]->name;
+            $e=false;
+            foreach($r->Rows as $t){
+                if($e)
+                    igk_exit();
+                $table_n=$t->$n;
+                $row=$rep->addNode(IGKDbSchemas::DATA_DEFINITION)->setAttributes(array("TableName"=>$table_n));
+                $tinfo=array();
+                $tt=$mysql->sendQuery("SELECT Count(*) FROM `".$table_n."`;");
+                $b=$tt->Columns[0]->name;
+                $row["Entries"]=$tt->Rows[0]->$b;
+                $tt=$mysql->sendQuery("SHOW FULL COLUMNS FROM `".$table_n."`;");
+                foreach($tt->Rows as $v){
+                    $cl=igk_api_get_columninfo($row, $v, $table_n, $mysql);
+                    // if ($v->Field == "clGrant" ){
+                    //     igk_wln($cl);
+                    //     igk_wln_e("grant...");
+                    // }
+                    $tinfo[$v->Field]=new IGKDbColumnInfo($cl->Attributes->ToArray());
+                }
+                $tables[$table_n]=(object)array("tinfo"=>$tinfo, 'ctrl'=>"sys://mysql_db");
+            }
+        }
+        $mysql->close();
+    }
+    if($render){
+        $rep->RenderXML();
+        igk_exit();
+    }
+    $check=igk_getv($param, "check");
+    if($check)
+        return $tables;
+    return $rep;
+}
+///<summary></summary>
+///<param name="api"></param>
+/**
+* 
+* @param mixed $api
+*/
+function igk_api_mysql_init_db($api, $exit=1){
+    if(igk_is_conf_connected()){
+        if($ctrl=igk_getctrl(IGK_MYSQL_DB_CTRL)){
+            $ctrl->initSDb(false, false);
+            igk_html_view_node("a", function($a){
+                $a->Content="Back";
+                $a["href"]="../";
+            });
+        }
+        else{
+            igk_html_view_node("reponse", function($n){
+                $n->add("status")->setContent("No ".IGK_MYSQL_DB_CTRL." FOUND");
+            });
+        }
+    }
+    else{
+        igk_createNode("response")->setContent("You must be logged as administrator")->RenderXml();
+    }
+    if ($exit)
+    igk_exit();
+}
+///<summary></summary>
+///<param name="api"></param>
+/**
+* 
+* @param mixed $api
+*/
+function igk_api_mysql_mysql_help($api){
+    $doc=igk_api_get_mysql_doc();
+    $bbox=$doc->body->addBodyBox();
+    $dv=$bbox->addDiv()->addContainer();
+    $ul=$dv->addUl();
+    $c=file_get_contents(__FILE__);
+    $tab=array();
+    preg_match_all("/function\\s+igk_api_mysql_(?P<name>([a-z])([a-z0-9_]*))\\s*/i", $c, $tab);
+    foreach($tab["name"] as $v){
+        $ul->addLi()->add("a")->setAttribute("href", $api->getAppUri("mysql/".$v))->Content=$v;
+    }
+    $dv->menu([])
+    ->setAttributes(array("type"=>"context", "id"=>"action"))
+        ->addmenuitem()->setAttributes([
+    "accesskey"=>1,
+    "label"=> __("Go to next line"),
+    "type"=>"checkbox"]);
+    $doc->RenderAJX();
+}
+///<summary>used to reset database for a controller</summary>
+/**
+* used to reset database for a controller
+*/
+function igk_api_mysql_resetctrldb($api, $ctrlname=null){
+    if(!igk_is_conf_connected()){
+        igk_ilog("'admin' must be connected in order to resetdb ctrl");
+        return 0;
+    }
+    $ctrl=igk_getctrl($ctrlname);
+    $r=0;
+    if($ctrl != null){
+        if($ctrl->UseDataSchema){
+            $ctrl->Invoke($ctrl, "dropDbFromSchemas", []);
+            $ctrl->Invoke($ctrl, "initDb", []);
+            igk_notification_push_event("system/dbchanged", $ctrl);
+            igk_wln_e("/!\\ Database reset for ".$ctrl->Name);
+            $ctrl->setParam(IGK_CTRL_TABLE_INFO_KEY, null);
+            $r=1;
+        }
+    }
+    if(!$r){
+        igk_wln("no configuraton found");
+    }
+    return $r;
+}
+///<summary></summary>
+/**
+* 
+*/
+function igk_api_mysql_resetsysdb(){ 
+    igk_getctrl(IGK_SYSDB_CTRL)->resetDb(); 
+    igk_navto_referer();
+}
+///<summary></summary>
+///<param name="api"></param>
+///<param name="tbname"></param>
+///<param name="name"></param>
+/**
+* 
+* @param mixed $api
+* @param mixed $tbname
+* @param mixed $name
+*/
+function igk_api_mysql_rmcolumn($api, $tbname, $name){
+    $doc=igk_api_get_mysql_doc();
+    $ad=igk_get_data_adapter("MYSQL") ?? igk_die("No MYSQL Found");
+    $bbox=$doc->body->addBodyBox();
+    $t=$bbox->clearChilds()->addDiv();
+    if($ad->connect()){
+        $g=$ad->rmColumn($tbname, $name);
+        if($ad->getHasError()){
+            $t->addDiv()->setClass("igk-danger")->Content="Some error : ".$ad->getError();
+        }
+        else{
+            $t->addObData(function() use ($g){igk_wln($g);
+            });
+        }
+        $ad->close();
+    }
+    $doc->RenderAJX();
+    igk_exit();
+}
+///<summary></summary>
+///<param name="api"></param>
+///<param name="tablename" default="null"></param>
+/**
+* 
+* @param mixed $api
+* @param mixed $tablename the default value is null
+*/
+function igk_api_mysql_who_use($api, $tablename=null){
+    if(!isset($tablename)){
+        igk_wln_e(__("table name not provided"));
+    }
+    $c=igk_db_get_datatableowner($tablename);
+    if($c){
+        $n=igk_createNode("response");
+        $n->addNode("info")->setContent("".$c);
+        $n->addNode("class")->Content=get_class($c);
+        if(igk_server_is_local()){
+            $n->addNode("file")->Content=(new ReflectionClass(get_class($c)))->getFileName();
+        }
+        $n->RenderXML();
+        igk_exit();
+    }
+}
+
+///<summary></summary>
+///<param name="t"></param>
+/**
+* 
+* @param mixed $t
+*/
+function igk_balafon_mysql_datatype($t){
+    switch(strtolower($t)){
+        case "int":
+        return "Int";
+        case "varchar":
+        return "VARCHAR";
+    }
+    return strtoupper($t);
+}
+///<summary></summary>
+///<param name="api"></param>
+///<param name="tbname"></param>
+///<param name="ntbname"></param>
+/**
+* 
+* @param mixed $api
+* @param mixed $tbname
+* @param mixed $ntbname
+*/
+function igk_mysql_rename_table($api, $tbname, $ntbname){
+    $mysql=igk_get_data_adapter(IGK_MYSQL_DATAADAPTER, true);
+    if($mysql->connect()){
+        $tbname=igk_db_escape_string($tbname);
+        $ntbname=igk_db_escape_string($ntbname);
+        $mysql->sendQuery("RENAME TABLE `{$tbname}` TO `{$ntbname}`");
+        $mysql->close();
+    }
+}
+///<summary>retrieve table definition</summary>
+/**
+ * @param array $tinfo table information 
+ */
+function igk_api_mysql_get_table_definition($api, $row, $table_n, $mysql, $tinfo=null, $entries=null){
+	$tt = $mysql->sendQuery("SELECT Count(*) FROM `".$table_n."`;");
+	$b = $tt->Columns[0]->name;
+	$count = $tt->Rows[0]->$b;
+    $row["Entries"] = $count;        
+	$row["clDescription"] = $mysql->sendQuery("SHOW TABLE STATUS WHERE NAME='".$table_n."';")->Rows[0]->Comment;
+	
+	//$tt = $mysql->sendQuery("DESCRIBE `".$t->$n."`;");
+	$tt = $mysql->sendQuery("SHOW FULL COLUMNS FROM `".$table_n."`;");
+	$unset_fields = [];
+	foreach($tt->Rows as $m=>$v){
+        $cl = igk_api_get_columninfo($row, $v, $table_n, $mysql);
+        
+        
+		if ($tinfo && $cl){
+            $tinfo[$v->Field] =new IGKDbColumnInfo( $cl->Attributes->ToArray());
+        }
+
+        if (!empty($v->Extra)){
+            if (($v->Extra=="auto_increment") || (strpos($v->Extra, "on update ")!==false)){
+                $unset_fields[] = $v->Field;
+            }
+        }
+	}
+
+	if($entries && $count>0){
+		$n = $entries->addNode("Rows")->setAttribute("For", $table_n);
+		foreach($mysql->select($table_n)->Rows as $v){
+            foreach($unset_fields as $m){
+                unset($v->$m);
+            } 
+			$n->addNode("Row")->setAttributes($v);
+		}
+	}
+}
+///<summary>Represente class: IGKMySQLUtilityConstant</summary>
+/**
+* Represente IGKMySQLUtilityConstant class
+*/
+class IGKMySQLUtilityConstant{
+    const VERSION="2.1";
+}

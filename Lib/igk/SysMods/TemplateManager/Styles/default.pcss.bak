@@ -1,0 +1,30 @@
+<?php
+// $def->attributes->clear();
+ // igk_die("kjd ? is ajx ".igk_is_ajx_demand() . " ".$def[".igk-winui-media-img.global"]);
+$def[".config"] = "background-color:#fefefe;";
+$def[".config .igk-roll-owner"] = "[trans: all 0.5s ease-in]";
+
+$def[".bar-header .igk-svg-symbol"] = "width:32px; height:32px; {sys: dispib}";
+$def[".bar-header > div"] = "{sys: dispib, alignm}";
+
+$def[".igk-winui-media-img"] = "{sys:dispib, no-overflow} width:100px; height:100px; background-repeat:no-repeat; background-position:center;";
+// $def[".igk-winui-media-img.global"]="{sys:dispn}";
+$def[".igk-winui-media-img.sm"]="{sys:dispn}";
+$def[".igk-winui-media-img.xsm"]="{sys:dispn}";
+$def[".igk-winui-media-img.xsml"]="{sys:dispn}";
+$def[".igk-winui-media-img.lg"]="{sys:dispn}";
+$def[".igk-winui-media-img.xlg"]="{sys:dispn}";
+$def[".igk-winui-media-img.xxlg"]="{sys:dispn}";
+
+$xsm_screen[".igk-winui-media-img.xsm"]= "{sys:dispib}";
+$xsm_screen[".igk-winui-media-img"]="width:32px; height:32px";
+$sm_screen[".igk-winui-media-img.sm"]= "{sys:dispib} ";
+$sm_screen[".igk-winui-media-img"]="width:48px; height:48px";
+$lg_screen[".igk-winui-media-img.lg"]= "{sys:dispib} width:92px; height:92px";
+$lg_screen[".igk-winui-media-img"]="width:92px; height:92px";
+
+$xlg_screen[".igk-winui-media-img.xlg"]= "{sys:dispib} width:100px; height:100px";
+$xlg_screen[".igk-winui-media-img"]="width:100px; height:100px";
+
+$xxlg_screen[".igk-winui-media-img.xxlg"]= "{sys:dispib}";
+?>

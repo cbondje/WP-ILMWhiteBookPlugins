@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AJXViewNode parent="" >
+    <attr name="tag" type="string" desc="tag for view node" fr="Noeud à remplacer"></attr>
+</AJXViewNode>

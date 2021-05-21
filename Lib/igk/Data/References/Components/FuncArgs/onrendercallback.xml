@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<OnRenderCallback>
+<attr name="callbackObj" required="1" fr="Objet d'expression de rappel.">
+	<fr>
+	expression de rappel. créer à l'aide de <i></i>
+	</fr>
+</attr></OnRenderCallback>

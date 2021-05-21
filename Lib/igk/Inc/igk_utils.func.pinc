@@ -1,0 +1,21 @@
+<?php
+// @file: igk_utils.func.pinc
+// @author: C.A.D. BONDJE DOUE
+// @description:
+// @copyright: igkdev © 2020
+// @license: Microsoft MIT License. For more information read license.txt
+// @company: IGKDEV
+// @mail: bondje.doue@igkdev.com
+// @url: https://www.igkdev.com
+
+///<summary></summary>
+/**
+* 
+*/
+function __(){
+    return call_user_func_array('igk_resources_gets', func_get_args());
+}
+defined("IGK_FRAMEWORK") || die("No Direct access allowed");
+if(defined("IGK_UTILITY_GLOBAL"))
+    return;
+define("IGK_UTILITY_GLOBAL", 1);

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PhpEvalCode parent="PhpCode" >
+<attr name="Ctrl" desc="controller in the execution context" />
+<attr name="Content" desc="php script to evaluate " />
+<attr name="Params" desc="array assoc of parameters" />
+</PhpEvalCode>

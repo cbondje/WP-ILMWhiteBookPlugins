@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Btn><attr name="name" required="1"></attr><attr name="value" required="1"></attr><attr name="type" def-v="submit"></attr><attr name="attributes"></attr></Btn>

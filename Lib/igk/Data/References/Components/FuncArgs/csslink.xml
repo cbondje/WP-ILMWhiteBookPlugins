@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CssLink>
+<attr name="href" required="1" desc="uri used to identify the link" fr="Uri vers le lien"></attr>
+<attr name="temp" def-v="0" desc="default value is 0" fr="definie ou nom l'utilisation du lien de manière temporaire"></attr></CssLink>

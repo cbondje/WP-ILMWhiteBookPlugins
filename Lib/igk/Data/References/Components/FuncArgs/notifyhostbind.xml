@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<notifyhostbind>
+<attr name="name">
+<fr><![CDATA[Idenditiant de notification. Si null la notification général est utilisée. ]]></fr>
+<en><![CDATA[Notification identifier. if null the general notification system will be used. ]]></en>
+</attr>
+<attr name="autohide" def-v="1">
+<fr><![CDATA[Activer ou non la suppression dynamique de la zone.]]></fr>
+<en><![CDATA[Enable or not auto hidding.. ]]></en>
+</attr></notifyhostbind>

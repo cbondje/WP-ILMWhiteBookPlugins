@@ -1,0 +1,54 @@
+<?php
+// @file: requirement.phtml
+// @author: C.A.D. BONDJE DOUE
+// @description:
+// @copyright: igkdev © 2020
+// @license: Microsoft MIT License. For more information read license.txt
+// @company: IGKDEV
+// @mail: bondje.doue@igkdev.com
+// @url: https://www.igkdev.com
+
+$error_print="";
+$c_lang="fr";
+$plang["fr"]["title"]="Balafon - Prerequis d'installation";
+$plang["fr"]["error_01"]="La version de php doit être supérieur à la 7.0+. mais ".phpversion(). " trouvé";
+$plang["en"]["title"]="Balafon - Installation requirement";
+$plang["en"]["error_01"]="Php version must be equal or greather than 7.0+ but ".phpversion(). " found";
+$lang=$plang[$c_lang];
+foreach($errors as $k=>$v){
+    $error_print .= "<div>".$plang[$c_lang]["error_".$v]."</div>";
+}
+$o=<<<EOF
+<!DOCTYPE html >
+<html>
+<head>
+	<title>{$plang[$c_lang]['title']}</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<link type="text/css" rel="stylesheet" href="./Styles/requirement.css" ></link>
+	<style type="text/css">
+	html, body{
+		width:100%;
+		height:100%;
+		padding:0px;
+		margin:0px;
+	}
+	body{
+		overflow:hidden;
+	}
+	</style>
+</head>
+
+<body>
+<div style="overflow-y:auto; height:100%">
+<div class="title" >
+{$lang["title"]}
+</div>
+<div class="content">
+{$error_print}
+</div>
+</div>
+</body>
+</html>
+EOF;
+echo $o;
+?>

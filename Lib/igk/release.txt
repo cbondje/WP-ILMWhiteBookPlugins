@@ -1,0 +1,45 @@
+﻿
+BalafonJS Updata
+
+22/02/2021
+>add unit testing with PHPUnit
+
+04/09/2018
+> multi open request with the same file
+
+
+
+>add "Classes" dir
+>add igk_run_script manager handle for bfm (balafon framework manager utility)
+
+
+>8.26.2.0222b
+>add igk_detect_closure : function
+
+>add script to manage balafonJS temp script
+>8.17.0.0727
+fix bug. include db_config in _tableInfo
+
+>8.16.0.0712
+active des utilitaire de cache. le cache system
+>8.12.1.0316
+amélioration du service web pour etre pris en charge par visual studio et c#
+
+>fix namespace rendering
+
+
+>update for template support
+15-06-16
+>bug fix for relative link and css relative uri link
+
+26-04-16
+> support dot sign for tagname
+
+> check for server response
+8.10.2.0420
+> api sync data from a controller igk_api_syncto_ctrl and igk_api_syncfrom_ctrl
+
+textbox with regex data validation
+8.10.2.0310
+>adapter mysql support column unique multiple
+

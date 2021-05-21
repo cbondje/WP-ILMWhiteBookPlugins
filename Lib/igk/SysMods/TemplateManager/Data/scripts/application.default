@@ -1,0 +1,23 @@
+<?php
+
+%{$packagenamespace}
+
+	
+
+class Application extends IGKTemplateBase  {
+
+	protected function onInstall($context){
+		parent::onInstall($context);
+	}
+	public function View(){
+		parent::View();
+		//TODO : Handle view mecanism
+	}
+	protected function InitComplete(){
+		parent::InitComplete();
+		//TODO : MAKE Init Complete call on application 
+	
+	}
+}
+
+?>

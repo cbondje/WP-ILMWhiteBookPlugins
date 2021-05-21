@@ -1,0 +1,10 @@
+<config>
+    <clTargetNodeIndex />
+    <clDisplayName />
+    <clRegisterName />
+    <clDataAdapterName>MYSQL</clDataAdapterName>
+    <clParentCtrl />
+    <clVisiblePages />
+    <clDescription />
+    <clDataSchema>false</clDataSchema>
+</config>

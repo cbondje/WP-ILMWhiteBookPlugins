@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ajxpaginationview><attr name="baseuri" require="1"></attr><attr name="total" require="1"></attr><attr name="perpage" require="1"></attr><attr name="selected" def-v="1"></attr><attr name="target"></attr></ajxpaginationview>

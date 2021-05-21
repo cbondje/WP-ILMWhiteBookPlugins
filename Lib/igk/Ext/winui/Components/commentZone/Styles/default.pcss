@@ -1,0 +1,88 @@
+<?php
+//style for comment zone
+
+$def[".igk-comment-z .p svg, .igk-comment-z .p svg #dot"] = "[trans:0.2s fill ease-in-out]";
+$def[".igk-comment-z .p svg"] = "fill:[syscl:commentFill]";
+$def[".igk-comment-z .p:hover svg"] = "fill:[syscl:commentHoverFill]";
+
+$def[".igk-comment-z .p svg #dot"] = "fill:[syscl:commentDot]";
+$def[".igk-comment-z .i:hover svg #dot"] = "fill:[syscl:commentHoverDot]";
+
+igk_css_set_from("comment-sz");
+
+?>
+
+.cm-btn svg:hover{
+	fill:#444;
+}
+.igk-comment-z{
+
+}
+.igk-comment-z .p svg{
+width:100%;
+height:100%;
+}
+.igk-comment-z .p > span{
+text-indent:-9999px;
+display:inline-block;
+}
+
+.igk-comment-z .c .m{
+	font-size:0.85em
+}
+.igk-comment-z .cm-header > span + span{
+	color:#dedede;
+}
+
+.igk-comment-z:after{
+	display:table;
+	clear:both;
+	content:' ';
+}
+.igk-comment-z .p{
+	display:inline;
+	float:left;
+}
+.igk-comment-z .a{
+	margin-top: 1em;
+}
+.igk-comment-z.google{
+
+}
+.igk-comment-z.google .p, .igk-comment-z.google .c{
+	display:table-cell;
+
+}
+.igk-comment-z .c .igk-section-title{
+	color: #286FFF;
+	font-weight:200;
+}
+.igk-comment-z .igk-bg-comment.p{
+	border:1px solid #cecece; width:48px; height:48px ; margin-right:20px; margin-bottom:1em;
+}
+.igk-comment-z .c{
+	width:100%;
+}
+
+.igk-comment-z .i{
+	display: block;
+	width:100%;
+}
+.igk-comment-z .i:not(:last-child):not(:first-child){
+	padding:1.2em 0px;
+}
+.igk-comment-z .i:first-child{
+	padding-bottom:1.2em;
+	padding-top:10px;
+}
+.igk-comment-z .i:last-child{
+	padding-top:1.2em;
+	padding-bottom:10px;
+}
+.igk-comment-z .i .t{
+	display:table-row;
+}
+.igk-comment-z .i .t > div{
+	display:table-cell !important;
+	vertical-align:top;
+}

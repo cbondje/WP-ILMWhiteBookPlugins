@@ -4,14 +4,15 @@
 // desc: download view
 use function ilm_resources_gets as __;
 
-?><div>
-    <ul>
+?><div>    
         <?php
         foreach ($books as $book) {
+            echo "<ul class=\"col\" >";
             echo "<li>" . $book->book_name . "</li>";
             echo "<li>" . $book->book_title . "</li>";
-            echo "<li><a href='./wbook/download/{$book->book_id}' class='button'>" . __("Download") . "</a></li>";
+            echo "<li>" . $book->book_desc . "</li>";
+            echo "<li><a href='./wbook/download/{$book->book_id}' book-id=\"{$book->book_id}\" class='button download-book-btn'>" . __("Download") . "</a></li>";
+            echo "</ul>";
         }
-        ?>
-    </ul>
+        ?>    
 </div>

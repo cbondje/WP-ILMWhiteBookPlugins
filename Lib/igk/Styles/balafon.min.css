@@ -1,0 +1,32 @@
+/* no session - start styles */
+body, html{
+	height:100%;
+	width:100%;
+}
+body{
+	background-color: #323232;
+	color: #ddd;
+}
+body.thumbnail{
+	background-color:#FF000B;
+}
+
+body.thumbnail:before {
+	content: 'vignete page';
+	display:block;
+	position:absolute;
+	top:0px;
+	bottom:0px;
+	right:0px;
+	opacity:0.4;
+	background-color:#eee;
+	z-index:10;
+	font-size: 4em;
+}
+
+body.thumbnail .igk-powered{
+	display:none;
+}
+body .igk-powered{
+	display:none !important;
+}

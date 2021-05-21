@@ -1,0 +1,14 @@
+//!#<?php
+
+
+$f = realpath($CF->getStylesDir().'/p.'.$type.'.pcss');
+if (igk_is_ajx_demand()){
+	igk_css_ajx_bind_file($f);	
+}else{
+	igk_assert_die(($extra[0]->Document === null), "Document is null");
+	$extra[0]->Document->Theme->addTemporaryFile($f);
+}
+
+
+return true;
+//?>

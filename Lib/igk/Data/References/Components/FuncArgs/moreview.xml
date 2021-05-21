@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<moreview><attr name="hide" def-v="1" type="int" desc="activate moreview mecanism">
+<fr><![CDATA[Active ou non le mécanisme voir plus d'information.]]></fr>
+</attr></moreview>

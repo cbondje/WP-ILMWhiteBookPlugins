@@ -9,4 +9,8 @@ namespace ILYEUM\wp;
 class actions{
     const ADMIN_INIT = "admin_init";
     const ADMIN_MENU = "admin_menu";
+    const ADMIN_ENQUEUE_SCRIPT= "admin_enqueue_scripts";
+
+
+    const DEF_ENQUEUE_SCRIPT = "wp_enqueue_scripts";
 }

@@ -1,0 +1,25 @@
+<updates>
+
+<update version="8.7.3.0507">
+	<li>addsympbol managemenet</li>
+	<li>fix get all header updload files</li>
+</update>
+
+<update version="8.7.3.0428">
+	<li>fix write 0 value for numeric data</li>
+	<li>igk_include_view shortcu</li>
+	<li>memory usage</li>
+</update>
+
+<update version="8.7.3.0415">
+	<li>fix cookies for multi domain transport</li>
+	<li>fix company title in balafon configuration file</li>
+</update>
+<update version="8.7.3.0412">
+	<li>subdomain support</li>
+	<li>fix bug for drop article in Horizontal pane manager</li>
+	<li>fix bug meta support description</li>
+	<li>add tbigk_subdomain controller. to configure your subdomain</li>
+	<li>fix infinite loop redirection for subdomain missing function</li>
+</update>
+</updates>

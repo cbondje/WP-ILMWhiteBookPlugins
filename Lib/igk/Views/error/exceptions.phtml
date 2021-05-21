@@ -1,0 +1,88 @@
+<?php
+// @file: exceptions.phtml
+// @author: C.A.D. BONDJE DOUE
+// @description:
+// @copyright: igkdev © 2020
+// @license: Microsoft MIT License. For more information read license.txt
+// @company: IGKDEV
+// @mail: bondje.doue@igkdev.com
+// @url: https://www.igkdev.com
+/** @var string $trace */ 
+ 
+?><!DocType html>
+<html>
+<head>
+<title>Exception - Page </title>
+<style type="text/css">
+*{
+margin:0px;
+padding:0px;
+}
+</style>
+<?php
+if(!defined("IGK_FORCSS")){
+    ?><link type="text/css" rel="stylesheet" href="<?=igk_io_corestyle_uri() ?>" />
+<?php
+}
+else{
+    ?>
+<style type="text/css">
+@import url("
+<?php
+/** @var string $error_style */
+/** @var callable $split_message */
+    echo $error_style;
+    ?>");
+</style>
+<?php
+}
+?>
+</head>
+<body class="error-page">
+<div class="header">
+    <div class="title">Balafon Exception</div>
+</div>
+<!--content-->
+<div>
+<?php
+if(isset($trace)){
+    ?>
+<div>
+<div>Trace</div>
+<div class="trace">
+<?php
+    echo $trace;
+    ?>
+</div>
+<div class="container">
+<?php
+    $dv="<div>";
+    foreach($last as $k=>$v){
+        $dv .= "<div class=\"last\">";
+        $dv .= "<div class=\"igk-col  fitw\">{$k}</div>";
+        $dv .= "<div class=\"igk-col igk-col-4-2\" >";
+        $dv .= ($k == "message" ? $split_message($v): $v);
+        $dv .= "</div>";
+        $dv .= "<div style='clear:both;' ></div>";
+        $dv .= "</div>";
+    }
+    $dv .= "</div>";
+    echo $dv;
+    ?>
+
+</div>
+
+</div>
+<?php
+}
+?><div>
+ </div>
+
+</div>
+
+
+
+<!--footer-->
+<div>
+</div>
+</body></html>

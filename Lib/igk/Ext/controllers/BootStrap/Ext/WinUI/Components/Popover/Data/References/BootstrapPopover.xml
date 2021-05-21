@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<BootstrapPopover parent="" >
+<attr name="Title" desc="get or set the title of this popup"   />
+<attr name="Message" desc="Message to show"   />
+</BootstrapPopover>

@@ -49,6 +49,8 @@ class BookDetails extends WidgetBase{
      * @throws ReflectionException 
      */
     public function widget($instance, $args){ 
+        if (!defined("IGK_FRAMEWORK"))
+            return;
         $book_id = getv($args, "book_id");
         $book = $book_id ? Books::select_row($book_id) : null;
         $d = igk_createnode('div');

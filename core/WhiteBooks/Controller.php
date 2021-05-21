@@ -29,4 +29,10 @@ class Controller{
     public function getLoader(){
         return environment()->getClassInstance(Loader::class);
     }
+    public function getDeclaredDir(){
+        return __DIR__;
+    }
+    public function getDeclaredFile(){
+        return __FILE__;
+    }
 }

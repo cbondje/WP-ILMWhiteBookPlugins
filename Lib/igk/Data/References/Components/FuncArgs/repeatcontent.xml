@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="utf-8"?>
+<repeatcontent><attr name="number" require="1" desc="Nombre entier positif qui définie le nombre de fois qu'il faudra dupliquer le contenu du composant. "></attr></repeatcontent>

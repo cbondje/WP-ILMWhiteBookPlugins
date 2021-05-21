@@ -6,8 +6,11 @@
 namespace ILYEUM\wp\database;
 
 use ILYEUM\database\Grammar;
-use ILYEUM\database\QueryRow; 
+use ILYEUM\database\QueryRow;
+use ILYEUM\Utility;
+
 use function ilm_getv as getv;
+use function ilm_log as _log;
 /**
  * represent model driver
  * @package ILYEUM\wp\database
@@ -34,8 +37,10 @@ class driver{
 
     const SELECT_DATA_TYPE_QUERY = 'SELECT distinct data_type as type FROM INFORMATION_SCHEMA.COLUMNS';
     const SELECT_VERSION_QUERY = "SHOW VARIABLES where Variable_name='version'";
-
-
+ 
+    public function getDbName(){
+        return constant('DB_NAME');
+    }
 
     public function escape_string($s){
         return mysqli_real_escape_string($this->con, $s);
@@ -59,6 +64,17 @@ class driver{
         $this->m_relations = [];
     }
     public function endInitDb(){
+        if ($this->m_relations){
+            foreach($this->m_relations as $tbname=>$r){
+                foreach($r as $m=>$p){
+                    $c = $p["column"];
+                    $c->clLinkType = Utility::GetTableName( $c->clLinkType );
+                    if (! $this->sendQuery($query = $this->getGrammar()->add_foreign_key( $tbname, $c))){
+                        _log(implode("\n", ["query failed: ",$query, $this->last_error()]));
+                    }
+                }
+            }
+        }
         $this->m_relations = [];
     }
     private function on_exit(){
@@ -66,6 +82,12 @@ class driver{
             mysqli_close($this->con);
             $this->con = null;
         }
+    }
+    public function pushRelations($table, $columninfo){
+        if (!isset($this->m_relations[$table])){
+            $this->m_relations[$table] = [];
+        }
+        $this->m_relations[$table][] = ["target"=>$columninfo->clLinkType, "column"=>$columninfo];
     }
     public function GetValue($k, $rowInfo=null, & $tinfo=null){
         static $configs;
@@ -80,6 +102,9 @@ class driver{
             return $m($rowInfo, $tinfo);
         }
         return $m;
+    }
+    public function GetExpressQuery(){
+        
     }
     public function sendQuery($query, $options=null){
         if (ilm_environment()->querydebug){
@@ -113,7 +138,7 @@ class driver{
     }
     public function foreignCheck(bool $check){
         $s = $check ? "1" : "0";
-        $this->sendQuery("SET foreign_key_checks=0"); 
+        $this->sendQuery("SET foreign_key_checks=$s"); 
     }
     public function dropTable($tablename){     
         $this->sendQuery("DROP TABLE ".$this->escape_string($tablename)); 
@@ -131,7 +156,7 @@ class driver{
     public function createTable($tablename, $columnInfo, $desc=null){
         $query = $this->getGrammar()->createTableQuery($tablename, $columnInfo, $desc);
         if (!$this->sendQuery($query)){
-
+            _log("query error: ".$query);
         }
         return true;
     }
@@ -174,10 +199,10 @@ class driver{
     }
     public function getFuncValue($type, $value){
         //
-        // if ($pos == "IGK_PASSWD_ENCRYPT"){
+        // if ($type == "IGK_PASSWD_ENCRYPT"){
         //     return "'".$driver->escape_string(IGKSysUtil::Encrypt($value))."'";
         // }
-        return null;
+        return "'".$this->m_driver->escape_string($value)."'";
     }
     public function getObjValue($value){
         // if(igk_reflection_class_implement($value, 'IIGKHtmlGetValue')){
@@ -200,6 +225,9 @@ class driver{
     }
     public function last_id(){
         return mysqli_insert_id($this->con);
+    }
+    public function last_error(){
+        return mysqli_error($this->con);
     }
 
     public function createLinkExpression(){

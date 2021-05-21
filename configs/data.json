@@ -30,6 +30,20 @@
                 "clType": "Int",
                 "clTypeLength": 11
             },
+            "book_author_id": {
+                "clLinkColumn": "ID",
+                "clLinkType": "%sysprefix%users",
+                "clName": "book_author_id",
+                "clType": "UBigInt",
+                "clTypeLength": 11
+            },
+            "book_desc_post_id": {
+                "clLinkColumn": "ID",
+                "clLinkType": "%sysprefix%posts",
+                "clName": "book_desc_post_id",
+                "clType": "UBigInt",
+                "clTypeLength": 11
+            },
             "book_createat": {
                 "clInsertFunction": "Now()",
                 "clName": "book_createat",

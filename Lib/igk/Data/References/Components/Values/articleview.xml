@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ArticleView desc="used to view an article in a div by default" >
+<attr name="Ctrl" value="string" desc="ctrl used for file template resolution" />
+<attr name="File" value="string" desc="file or template to bind" />
+<attr name="Row" value="string|evalexpression"  desc="data row to bind" />
+<attr name="InnerOnly" value="0|1" desc="ask to render only inner content." />
+</ArticleView>

@@ -1,0 +1,7 @@
+<?php
+if (isset($this)){
+$c= igk_invoke_callback_obj($this, $this->__callback, $param);
+igk_html_rm($this);
+return $c;
+}
+return null;

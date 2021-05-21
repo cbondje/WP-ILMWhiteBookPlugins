@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Visible><attr name="cond" required="1" desc="visibility condition" require="1" >
+<fr>Fonction de rappel à utiliser comme condition de visibilité du noeud.</fr>
+<en>Visitility condition. bool|callback to execute.</en>
+</attr></Visible>

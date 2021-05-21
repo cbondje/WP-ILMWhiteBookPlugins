@@ -6,12 +6,16 @@
 namespace ILYEUM\WhiteBooks\Admin;
 
 use ILYEUM\wp\actions;
-use ilm_resources_gets as __;
+use function ilm_resources_gets as __;
+use function ilm_getctrl as getctrl;
 use ILYEUM\Utility;
 use ILYEUM\WhiteBooks\Models\Books;
 use ILYEUM\WhiteBooks\Models\ModelBase;
 use ILYEUM\wp\capability;
 use ILYEUM\wp\database\driver;
+use function ilm_environment as environment;
+use function ilm_app as app;
+use function ilm_log as _log;
 
 /**
  * plugins manager
@@ -37,18 +41,25 @@ class Manager{
                 );	
         }, 5);
  
-        register_activation_hook(ilm_app()->plugins_file , function(){
+        register_activation_hook(app()->PluginFile , function(){
             // activate the plugins
             $this->on_activate(...func_get_args());
-        });
-        register_deactivation_hook(ilm_app()->plugins_file , function(){
+        }); 
+
+        register_deactivation_hook(app()->PluginFile , function(){
             //deactivate the plugins
             $this->on_deactivate(...func_get_args());
+            
         });
-        register_uninstall_hook(ilm_app()->plugins_file , [static::class, 'uninstall_plugins']);
+        register_uninstall_hook(app()->PluginFile , [static::class, 'uninstall_plugins']);
+
+        // test on activate
+        // $this->on_deactivate();
+        // $this->on_activate();
+        // exit;
     }
     public function getUriQuery($args=null){
-        return implode("&", array_filter(["?page=".ilm_app()->configs->plugin_uri, $args]));
+        return implode("&", array_filter(["?page=".app()->configs->plugin_uri, $args]));
     }
    
     public function form(){
@@ -58,15 +69,15 @@ class Manager{
         }
 
         $books = Books::select_all();
-        ilm_getctrl()->view("admin.form.phtml", [
-            "books"=>$books
-        ]); 
-        if (!defined("IGK_FRAMEWORK")){
-            return;
-        }
+        // ilm_getctrl()->view("admin.form.phtml", [
+        //     "books"=>$books
+        // ]); 
+        // if (!defined("IGK_FRAMEWORK")){
+        //     return;
+        // }
 
         $dv = igk_createnode("div");
-        global $current_screen;
+        // global $current_screen;
         // igk_wln_e($current_screen);
         // $dv->obdata(function()use($current_screen){
         //     apply_filters('screen_options_show_screen', true, $current_screen);
@@ -82,8 +93,8 @@ class Manager{
         $form->p()->actionbar(function($a){
             $a->a_get("add")->setClass("button")->Content = "Add Book";
             $a->a($this->getUriQuery("action=dumpdb"))->setClass("button")->Content = "Dump Pages";
-            // $a->a_get("initialize")->setClass("button")->Content = "Initialize Db";
-            // $a->a_get("reset")->setClass("button")->Content = "reset Db";
+            $a->wp_a_get()->setClass("button ajx-button")->Content  = "Dialogs";
+    
         });
 
         // Books::create([
@@ -124,10 +135,8 @@ class Manager{
         }else{
             $dv->p()->Content = "No books founds.";
         } 
-        $dv->renderAJX();
-        $fc = ILM_WHITE_BOOK_DIR."/Views/admin.form.phtml";
-        //igk_wln("file: ".$fc);
-        igk_io_w2file($fc, $dv->render((object)["Context"=>"XML", "Indent"=>1]));
+        $dv->renderAJX(); 
+        igk_io_w2file(ILM_WHITE_BOOK_DIR."/Views/admin.form.phtml", $dv->render((object)["Context"=>"XML", "Indent"=>1]));
 
     }
     private function _view_users(){
@@ -148,12 +157,13 @@ class Manager{
      * @return void 
      */
     protected function on_activate(){
-        $driver = ilm_environment()->getClassInstance(driver::class);
+        $driver = environment()->getClassInstance(driver::class);
         $tab = ModelBase::GetModels();
         $db_config = ilm_get_db_config();
         if ($db_data = $db_config){ 
-            //ilm_environment()->querydebug = 1;
-            $ctrl = ilm_getctrl($this->controller, false);
+            // environment()->querydebug = 1;
+            ob_start();
+            $ctrl = getctrl($this->controller, false);
             $driver->beginInitDb();
             foreach($db_data as $table=>$inf){
                 $table = Utility::GetTableName($table, $ctrl);
@@ -162,24 +172,25 @@ class Manager{
                 }
             }
             $driver->endInitDb(); 
-            //exit;
+            _log("CLEAN:", ob_get_clean()); 
         } 
     }
     /**
-     * on activate
+     * on activate plugin
      * @return void 
      */
     protected function on_deactivate(){
-        $driver = ilm_environment()->getClassInstance(driver::class);
+        // environment()->querydebug = 1;
+        $driver = environment()->getClassInstance(driver::class);
         $tab = ModelBase::GetModels(); 
         $driver->foreignCheck(false);
         foreach($tab as $m){
             $m::drop();
         }
-        $driver->foreignCheck(true); 
+        $driver->foreignCheck(true);  
     }
     /**
-     * on remove plugins
+     * on remove plugin
      * @return void 
      */
     protected function on_uninstall(){
@@ -221,7 +232,7 @@ class Manager{
                         }
                     }
                 }
-                igk_io_w2file("/Volumes/Data/temp/out_page.xml", "<?xml version=\"1.0\" encoding=\"utf-8\" ?>".$xml->render((object)["Indent"=>true]));
+                //igk_io_w2file("/Volumes/Data/temp/out_page.xml", "<?xml version=\"1.0\" encoding=\"utf-8\" ? >".$xml->render((object)["Indent"=>true]));
                 // foreach($g as $k){
                 //     if (!$h){
                 //         $tr = $table->tr();
@@ -242,6 +253,5 @@ class Manager{
             }
         }
         $ul->renderAJX(); 
-        
     }
 }

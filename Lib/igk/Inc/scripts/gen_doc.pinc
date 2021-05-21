@@ -1,0 +1,83 @@
+<?php
+// @file: gen_doc.pinc
+// @author: C.A.D. BONDJE DOUE
+// @description:
+// @copyright: igkdev © 2020
+// @license: Microsoft MIT License. For more information read license.txt
+// @company: IGKDEV
+// @mail: bondje.doue@igkdev.com
+// @url: https://www.igkdev.com
+
+if(defined("IGK_FRAMEWORK")){
+    $o=[];
+    $re=0;
+    $k="\"".IGK_LIB_FILE."\"";
+    $cmd=PHP_BINARY." \"".__FILE__."\" {$k}";
+    exec($cmd, $o, $re). "\n";
+    igk_wln("Generate Core Documentation");
+    if($re != 0){
+        echo "/!\\ ERROR : ".$re. " : ".$k."\n";
+        echo $cmd."\n";
+        echo implode("\n", $o);
+    }
+    else{
+        echo implode("\n", $o);
+    }
+    igk_exit();
+}
+$fc=function($itc, $itif){
+    $tab=get_defined_functions();
+    $fc=0;
+    if(isset($tab["user"])){
+        $fc=$tab["user"];
+    }
+    echo ">functions:\n";
+    $total=0;
+    $ftab=array();
+    foreach($fc as $k){
+        $l=(new ReflectionFunction($k))->getStartLine();
+        echo $k.":".$l."\n";
+        $ftab[$k]=["line"=>$l];
+        $total++;
+    }
+    echo ">#Count:{$total}\n";
+    echo "\n";
+    echo ">class:\n";
+    $tab=get_declared_classes();
+    $total=0;
+    if((count($tab) - $itc) > 0){
+        for(; $itc < count($tab); $itc++){
+            $k=$tab[$itc];
+            $l=(new ReflectionClass($k))->getStartLine();
+            echo $k.":".$l."\n";
+            $total++;
+        }
+    }
+    echo ">#Count:{$total}\n";
+    echo "\n\n";
+    $tab=get_declared_interfaces();
+    $total=0;
+    if((count($tab) - $itif) > 0){
+        for(; $itif < count($tab); $itif++){
+            $k=$tab[$itif];
+            $l=(new ReflectionClass($k))->getStartLine();
+            echo $k.":".$l."\n";
+            $total++;
+        }
+    }
+    echo ">#Count:{$total}\n";
+    echo "\n\n";
+    exit();
+};
+$f=$_SERVER["argv"][1];
+if(file_exists($f)){
+    $itc=count(get_declared_classes());
+    $itif=count(get_declared_interfaces());
+    $s=file_get_contents($f);
+    eval(" \$fc(\$itc, \$itif); ?>".$s);
+}
+else{
+    echo "file not found";
+}
+echo "Not deft";
+?>

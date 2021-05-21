@@ -57,8 +57,17 @@ class Utility{
         }
         return json_encode($root, $json_option);
     }
-    public static function GetTableName($table, $ctrl=null){    
-        $p = ilm_app()->configs->db_prefix;
-        return str_replace("%prefix%", $p, $table);
+    public static function GetTableName($table){    
+        $globalprefix ="";
+        if (array_key_exists("table_prefix", $GLOBALS)){
+            $globalprefix = $GLOBALS["table_prefix"];
+        } 
+        foreach([
+            "%prefix%"=>$globalprefix.ilm_app()->configs->db_prefix,
+            "%sysprefix%"=>$globalprefix
+        ] as $k=>$v){
+            $table = str_replace($k, $v, $table);
+        }
+        return $table;
     }
 }

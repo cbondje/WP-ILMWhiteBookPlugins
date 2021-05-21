@@ -6,7 +6,7 @@ $configs["plugin_title"] = 'ILM - WhiteBook';
 $configs["plugin_entry_ns"] = "ILYEUM";
 
 $configs["plugin_shortname"] = 'ILM - WhiteBook';
-$configs["db_prefix"] = "wplq_ilm_";
+$configs["db_prefix"] = "ilm_";
 
 $configs["wp_widgets"] = [
     \ILYEUM\WhiteBooks\Widgets\BookDetails::class,

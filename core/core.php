@@ -23,6 +23,21 @@ function ilm_environment(){
 function ilm_app(){
     return ILYEUM\App::getInstance();
 }
+/**
+ * get request variable
+ * @param mixed $var 
+ * @param mixed|null $default 
+ * @param mixed|null $tab 
+ * @return mixed 
+ */
+function ilm_getr($var, $default=null, $tab=null){
+    if ($tab===null)
+        $tab = $_REQUEST;
+    if (key_exists($var, $tab)){
+        return $tab[$var];
+    }
+    return $default;
+}
  
 function ilm_getev($value, $default){
 if(($value == null) || empty($value)){
@@ -176,7 +191,7 @@ function ilm_get_db_config(){
     }
     $r = ilm_app()->loadJsonConfig("data.json");
     foreach($r as $t=>$k){
-        $r->$t->ColumnInfo = new ConfigHandler((array)$r->$t->ColumnInfo);
+        $r->$t->ColumnInfo = new ConfigHandler((array)$k->ColumnInfo);
     }  
     ilm_environment()->set("db_config", $r);
     return $r;    
@@ -188,7 +203,11 @@ function ilm_db_get_table_info($table){
 function ilm_get_robjs($list, $replace=0, $request=null){
     return ilm_get_robj(is_string($list)? explode("|", $list): $list, $replace, $request);
 }
-
+function ilm_log(){
+    if (function_exists("igk_ilog")){
+        return igk_ilog(...func_get_args());
+    }
+}
 
 ///<summary>retreive requested object as object</summary>
 ///<param name="callbackfilter">callable that will filter the request available key</param>

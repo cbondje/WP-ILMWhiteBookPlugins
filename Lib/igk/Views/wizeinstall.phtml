@@ -1,0 +1,221 @@
+<?php
+
+//
+// desc : wize installation view
+// file : wizeinstall.phtml
+
+
+use function igk_resources_gets as __;
+
+
+///<summary></summary>
+///<param name="doc"></param>
+///<param name="uri"></param>
+/**
+* 
+* @param mixed $doc
+* @param mixed $uri
+*/
+function igk_use_symbols($doc, $uri){
+    $doc->body->appendScriptNode("script:".__CLASS__)->Content=	<<<EOF
+ns_igk.readyinvoke('igk.gkds.symbolManager.load', '{$uri}','default');
+EOF;
+}
+$app=igk_app();
+$fclist=array("install"=>function(){
+            $app=igk_app();
+            $o=igk_get_robj();
+            $e=0;
+            if(empty($o->cladminDomain)){
+                $e=1;
+                igk_notifyctrl("wizeinstall")->addErrorr("e.domainrequire");
+            }
+            if(empty($o->cladminWebPageTitle)){
+                $e=1;
+                igk_notifyctrl("wizeinstall")->addErrorr("e.setwebpagetitle");
+            }
+            if($o->cladminPassword == $o->cladminrePassword){
+                if(empty($o->cladminPassword))
+                    $o->cladminPassword="admin";
+            }
+            else{
+                igk_notifyctrl("wizeinstall")->addErrorr("e.passwordrequired");
+                $e=1;
+            }
+            if(!$e && ($o->clDbUserPassword !== $o->clDbUserRePassword)){
+                $e=1;
+            }
+            igk_notification_push_event("sys://event/check_wizeinstall", $o);
+            $es="::Error";
+            if(!isset($o->$es) && !$e){
+                $app->Configs->admin_pwd=md5($o->cladminPassword);
+                $app->Configs->website_domain=$o->cladminDomain;
+                $app->Configs->website_title=$o->cladminWebPageTitle;
+                $app->Configs->db_name=$o->clDbName;
+                $app->Configs->db_server=$o->clDbServer;
+                $app->Configs->db_user=$o->clDbUserLogin;
+                $app->Configs->db_pwd=$o->clDbUserPassword;
+                igk_save_config();
+                $app->Session->setParam("igk_wizeinstall", null);
+                session_destroy();
+                igk_navto(igk_io_baseUri("/Configs"));
+                igk_exit();
+            }
+            else{
+                igk_notifyctrl("wizeinstall")->addErrorr("e.wizecontains.error");
+            }
+        });
+
+
+
+$is_install=(igk_getv($params, 1) == "install") || igk_getr("install");
+if($is_install){
+	call_user_func_array($fclist["install"], $params);
+}
+igk_app()->Session->setParam("igk_wizeinstall", 1);
+igk_google_addfont($doc, "Roboto");
+igk_google_addfont($doc, "Material+Icons");
+
+
+igk_css_reg_svg_symbol_files(IGK_LIB_DIR."/Data/R/svg/symbols.svg");
+
+$doc=igk_get_document(__FILE__);
+$doc->Title=R::gets("BALAFON - Setup - [IGKDEV]");
+$doc->Favicon=new IGKHtmlRelativeUriValueAttribute("Lib/igk/Default/R/Img/balafon.ico");
+$doc->Theme->addTempFile(dirname(__FILE__)."/../Styles/wizeinstall.pcss");
+$bbox=$doc->body->addBodyBox();
+$bbox->ClearChilds();
+$t=$bbox->addDiv();
+$t["class"]="+igk-app-wizei +google-Roboto fit";
+$t->addDiv()->setClass("posfix fitw fith logo")->Content = igk_svg_use("balafon_logo");
+//*
+
+$conf_ctrl=igk_getctrl(IGK_CONF_CTRL);
+
+// $t->addDiv()->addDialogBox(R::gets("Install Wizard - BALAFON"));
+
+$box=$t->addDiv()->setClass("dispflex flex-a-center fit");
+
+$dialog = $box->addDiv()->setClass("dialog");//->Content = "BASICS ";
+
+$title = $dialog->addDiv()->setClass("dialog-title");
+$title->addSectionTitle(4)->Content = __("Install Wizard - BALAFON");
+
+$frm= $dialog->addForm();
+$frm["action"]=igk_io_baseUri()."/Configs/?wizeinstall=1";
+$frm["method"]="POST";
+
+$frm->addInput("install", "hidden", "1");
+igk_html_form_initfield($frm);
+
+$c=$frm->addDialogBoxContent()->setStyle("background-color:#fdfdfd");
+
+
+$hpage=$c->addDiv()->setClass("igk-hpage-view")->setId("pageview");
+
+
+$hpage->clearChilds();
+$hpage->addScript()->Content = file_get_contents(dirname(__FILE__)."/.pageview.js");
+
+
+$d=$hpage->addDiv()->setId("welcome");
+$d->addRow()->setStyle("margin:3em")->setClass("no-overflow")->addArticle($conf_ctrl, "wizeinstall.welcome");
+$d=$hpage->addDiv()->setId("license");
+$g=$d->addDiv();
+$gr=$g->addRow();
+$gr->addCol("igk-col-3-1 igk-xsm-dispn igk-sm-dispn")->addDiv()->Content = igk_svg_use("balafon_logo"); // "license_logo");
+$dvr=$gr->addCol("igk-col-3-2 igk-sm-fitw igk-xsm-fitw")->addDiv();
+$dvr->addQuote()->addSectionTitle(4)->Content=__("Licence");
+$dvr->addReadOnlyTextZone(igk_io_dir(IGK_LIB_DIR."/license.txt"))->setStyle("height: 320px; font-size:0.88em;padding:10px; ");
+
+/*
+
+$box["igk:data"]="{closeBySubmit:1, noClose:1}";
+$box["class"]="no-close";
+$c=$box->addDialogBoxContent()->setStyle("background-color:#fdfdfd");
+$f=igk_io_dir(IGK_LIB_DIR."/license.txt");
+$dv=$c->addRow()->addDiv();
+$dv->addNotifyHost("wizeinstall");
+$frm=$dv->addForm();
+$frm["action"]=igk_io_baseUri()."/Configs/?wizeinstall=1";
+$frm["method"]="POST";
+$frm->addInput("install", "hidden", 1);
+$frm->addInput("igk-winstall", "hidden", 1);
+$dv=$frm->addDiv();
+$hpage=$dv->add($t->addNodeCallback("pageview", function($t){
+    return $t->addHorizontalPageView()->setId("pageview");
+}));
+$hpage->clearChilds();
+
+/*
+if(!$is_install){
+    $d=$hpage->addDiv()->setId("welcome");
+    $d->addRow()->setStyle("margin:3em")->setClass("no-overflow")->addArticle($conf_ctrl, "wizeinstall.welcome");
+    $d=$hpage->addDiv()->setId("license");
+    $g=$d->addDiv();
+    $gr=$g->addRow();
+    $gr->addCol("igk-col-3-1 igk-xsm-dispn igk-sm-dispn")->addDiv()->addSvgSymbol("license_logo");
+    $dvr=$gr->addCol("igk-col-3-2 igk-sm-fitw igk-xsm-fitw")->addDiv();
+    $dvr->addQuote()->addSectionTitle(4)->Content=R::gets("Licence");
+    $dvr->addReadOnlyTextZone($f)->setStyle("height: 320px; font-size:0.88em;padding:10px; ");
+}
+//*/
+$d=$hpage->addDiv()->setId("admin");
+$g=$d->addDiv();
+$gr=$g->addRow();
+$gr->addCol("igk-col-3-1 igk-xsm-dispn igk-sm-dispn")->addDiv()->Content = igk_svg_use( "balafon_logo"); // "admin_logo"); // addSvgSymbol("admin_logo");
+$cr=$gr->addCol("igk-col-3-2 igk-sm-fitw igk-xsm-fitw")->addDiv();
+$cr->addSectionTitle(4)->Content=R::gets("Admin");
+igk_html_build_form($cr->addDiv(), array(
+        "cladminDomain"=>array(
+            "require"=>1,
+            "attribs"=>array(
+                "placeholder"=>"your site domain",
+                "value"=>$app->Configs->website_domain
+            )
+        ),
+        "cladminWebPageTitle"=>array(
+            "require"=>1,
+            "attribs"=>array(
+                "placeholder"=>"main site title",
+                "value"=>$app->Configs->website_title
+            )
+        ),
+        "cladminPassword"=>array("type"=>"password"),
+        "cladminrePassword"=>array("type"=>"password")
+    ));
+
+	//
+$d=$hpage->addDiv()->setId("mysqldbsetting");
+$g=$d->addDiv();
+$gr=$g->addRow();
+$gr->addCol("igk-col-3-1 igk-xsm-dispn igk-sm-dispn")->addDiv()->Content = igk_svg_use("mysql_logo");
+$cr=$gr->addCol("igk-col-3-2 igk-sm-fitw igk-xsm-fitw")->addDiv();
+$cr->addSectionTitle(4)->Content=R::ngets("title.mysqldbsetting");
+igk_html_build_form($cr->addDiv(), array(
+        "clDbName"=>array("required"=>1, "attribs"=>array("value"=>"igkdev")),
+        "clDbServer"=>array("required"=>1, "attribs"=>array("value"=>"localhost")),
+        "clDbUserLogin"=>array("required"=>1, "attribs"=>array("value"=>"root")),
+        "clDbUserPassword"=>array("type"=>"password"),
+        "clDbUserRePassword"=>array("type"=>"password")
+    ));
+	//*/
+
+
+
+$dv = $dialog->addDiv();
+// $dv=$c->addDiv();
+$b=$dv->addActionBar();
+$b->addButton("Prev", R::ngets("btn.prev"))
+->setClass("prev")->setAttribute("igk-hpageview-role", "prev")
+->setAttribute('onclick', "javascript: \$igk('#pageview').first().moveback(); return false;")
+->Content = "Prev";
+$b->addButton("Next", R::ngets("btn.next"))->setClass("next")->setAttribute("igk-hpageview-role", "next")->setAttribute('onclick', "javascript: \$igk('#pageview').first().movenext(); return false;")
+->Content = "Next";
+$b->addInput("btn.send", "submit", R::ngets("btn.install"))->setClass("igk-btn igk-btn-default igk-pull-right")
+->setAttribute("igk-hpageview-role", "submit")->setAttribute('onclick', "javascript: \$igk('.igk-app-wizei').first().select('form').first().o.submit(); return false;");
+$dialog->addDiv()->setStyle("padding:1.0em 0px;")->addRow()->addDiv()->setClass("alignc")->addIGKCopyright();
+
+//*/
+$doc->RenderAJX();
+igk_exit();

@@ -1,0 +1,49 @@
+<?php
+// @file: onrendercallback.fr.phtml
+// @author: C.A.D. BONDJE DOUE
+// @description:
+// @copyright: igkdev © 2020
+// @license: Microsoft MIT License. For more information read license.txt
+// @company: IGKDEV
+// @mail: bondje.doue@igkdev.com
+// @url: https://www.igkdev.com
+
+?>
+<p>
+Composant utilisé dans la création de noeud avec expression de rappel. Cette expression de rappel sera invoquée au moment du rendu
+du composant.
+</p>
+
+
+<p>
+Dans un système où l'utilisation de session est active,  L'utilisation des fonctions anonymes est prohibé.
+</p>
+
+<p>Au moment du rendu l'expression de rappel sera invoqué dans le contexte de création du noeud. Les paramètres passés à l'expression de rappel
+seront des paramètre additionnel definit lors de la création de l'expression.</p>
+
+<p>
+L'écriture de la fonction sera inclut au rendu de sortie.
+</p>
+
+<p>
+Note: les expressions de rappel sont crées à l 'aide de la fonction <b>igk_create_expression_callback</b>,
+<b>igk_create_node_callback</b> ou <b>igk_create_func_callback</b>
+</p>
+
+
+exemple:
+
+<code lang="php">
+<?php
+$t->addDiv()->addOnRenderCallback(igk_create_func_callback(function(){echo "hello";
+}));
+?></code>
+
+<p>
+produira:
+<code lang="xml">
+<div>
+	"hello"
+</div>
+</code></p>

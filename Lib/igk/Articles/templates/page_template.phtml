@@ -1,0 +1,25 @@
+<?php
+// @file: page_template.phtml
+// @author: C.A.D. BONDJE DOUE
+// @description:
+// @copyright: igkdev © 2020
+// @license: Microsoft MIT License. For more information read license.txt
+// @company: IGKDEV
+// @mail: bondje.doue@igkdev.com
+// @url: https://www.igkdev.com
+
+/** @var string $docType */
+/** @var string $currentLang */
+?>
+<!DOCTYPE <?= $docType ?> >
+<html lang="<?= $currentLang ?>" >
+<head>
+<title><?= $title ?></title>
+<?php
+igk_hook("html_head");
+?>
+</head>
+<body>
+<?php
+igk_hook("html_body");
+?></body></html>

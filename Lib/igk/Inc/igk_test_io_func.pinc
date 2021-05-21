@@ -1,0 +1,33 @@
+<?php
+// @file: igk_test_io_func.pinc
+// @author: C.A.D. BONDJE DOUE
+// @description:
+// @copyright: igkdev © 2020
+// @license: Microsoft MIT License. For more information read license.txt
+// @company: IGKDEV
+// @mail: bondje.doue@igkdev.com
+// @url: https://www.igkdev.com
+
+$tab=get_defined_functions()["user"];
+sort($tab);
+foreach($tab as $k=>$v){
+    if(preg_match("/^igk_io_/", $v)){
+        try {
+            $rf=new ReflectionFunction($v);
+            if($rf->getNumberOfRequiredParameters() > 0){
+                igk_wln($v." ::: ");
+                continue;
+            }
+            $s=$v();
+            if(!is_object($s))
+                igk_wln($v. " : ".$s);
+            else{
+                igk_wln($v);
+                igk_wln($s);
+            }
+        }
+        catch(Exception $ex){
+            igk_wln("failed : ".$v);
+        }
+    }
+}

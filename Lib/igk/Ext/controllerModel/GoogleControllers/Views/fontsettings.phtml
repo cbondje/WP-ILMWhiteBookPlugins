@@ -1,0 +1,44 @@
+<?php
+// @file: fontsettings.phtml
+// @author: C.A.D. BONDJE DOUE
+// @description:
+// @copyright: igkdev © 2020
+// @license: Microsoft MIT License. For more information read license.txt
+// @company: IGKDEV
+// @mail: bondje.doue@igkdev.com
+// @url: https://www.igkdev.com
+
+use function igk_resources_gets as __;
+$doc->title = "Google's Fonts - Balafon";
+$t->addsectiontitle(4)->Content="Google's Fonts";
+$frm=$t->addform('font/settings');
+$box=$frm->addPanelBox();
+$group=$box->addformgroup();
+$group->addlabel("family", __('Family'));
+$group->addInput('family', 'text');
+$group=$box->addformgroup();
+$group->addlabel("size", __('Size'));
+$group->addInput('size', 'text');
+$uri=$ctrl->geturi('install');
+$box->addbutton("btn.install")
+->setClass("igk-btn igk-btn-default")
+->setContent(__("Install Or Update"))->on("click", "this.o.form.action='{$uri}'; this.o.form.submit()");
+
+
+if (!igk_sys_env_production())
+    $t->addDiv()->addA($ctrl->geturi("resave"))
+    ->setClass("igk-btn igk-btn-default")
+    ->Content = __("Build");
+
+$box=$frm->addPanelBox();
+$box->add("h2")->Content=__("Intalled font");
+$ul=$box->add('ul');
+$ul["class"]="google font-list";
+extract($params);
+foreach($fontlist as $k){
+    $sss=explode(":", $k);
+    $n=igk_getv($sss, 0);
+    $s=igk_getv($sss, 1);
+    $li=$ul->addli();
+    $li->addspan()->setClass("block")->content= "Ab : ".$n;
+}

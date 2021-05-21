@@ -1,0 +1,6 @@
+<DataDefinition TableName="tbtogo_billing">
+<Column clName="clId" clType="Int" clTypeLength="25" clAutoIncrement="1" clIsPrimary="1"></Column>
+<Column clName="clUId" clType="Int" clTypeLength="25" clDescription="user id"></Column>
+<Column clName="clDate" clType="Datetime" clTypeLength="25" clDescription="date de validation"></Column>
+<Column clName="clTotalAmount" clType="Float" clTypeLength="25" clDescription="montant total"></Column>
+</DataDefinition>

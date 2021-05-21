@@ -1,0 +1,14 @@
+<?php
+use function igk_resources_gets as __;
+
+?><div>
+<h2>Class Information : {{ $name }} </h2>
+</div>
+
+<div > Methods </div>
+
+<ul **click="alert('ok')" >
+	<li class="" > $methods->getName() </li>
+</ul>
+
+<div igk-data-binding="li: {$row->name}" >info method</div>

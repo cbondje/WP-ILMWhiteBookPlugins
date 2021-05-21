@@ -1,0 +1,357 @@
+#!/usr/bin/env php
+<?php
+// @author: C.A.D BONDJE DOUE
+// @file : file extension
+// @description: balafon command line args
+
+use IGK\Controllers\ControllerTask;
+use IGK\Models\Crons;
+use IGK\System\Console\App;
+use IGK\System\Console\AppCommand;
+use IGK\System\Console\Commands\DbCommand;
+use IGK\System\Console\Logger;
+use IGK\System\IO\File\PHPScriptBuilder;
+use IGK\System\Process\CronJobProcess;
+
+use function igk_resources_gets as __;
+
+require_once(__DIR__ . "/../igk_framework.php");
+
+
+
+//--------------------------------------------------------
+// + define basics balafon command
+//
+$command = [
+    "--debug" => [
+        function ($v, $command) {
+            $command->debug = true;
+            igk_debug(1);
+        }, __("enable debug")
+    ],
+    "--set:default_controller" => [function ($v, $command) {
+        $command->exec = function ($command, $name = "") {
+            if (!empty($name) && class_exists($name)) {
+                igk_app()->Configs->default_controller = $name;
+                igk_save_config(true);
+                Logger::success(__("controller changed to {0}", $name));
+            }
+        };
+    }, __("set default controller")],
+    "--get:sysconfigs" => [
+        function ($v, $command) {
+            $command->exec = function ($command, $pattern = null) {
+                $tab = igk_app()->Configs->getEntries();
+                ksort($tab);
+
+                foreach ($tab as $k => $v) {
+                    if (!$pattern ||  preg_match("/$pattern/i", $k)) {
+                        Logger::print($command->app::gets(App::BLUE, $k) . "=" . $v);
+                    }
+                }
+                Logger::print("\n");
+            };
+        },
+        __("get system configuration")
+    ],
+    "--get:configs" => [
+        function ($v, $command) {
+            $command->exec = function ($command, $classname = null, $pattern = null) {
+                if ($c = igk_getctrl($classname, false)) {
+                    $ct = $c->getConfigs();
+                    $is_xml = property_exists($command->options, "-xml");
+                    if ($is_xml) {
+                        $opt = igk_createobj();
+                        $opt->Indent = true;
+                        $opt->Context = "xml";
+                        igk_createxml_config_data($ct->to_array())->renderAJX($opt);
+                    } else {
+                        $cl = $ct->to_array();
+                        Logger::print(json_encode($cl, JSON_PRETTY_PRINT));
+                    }
+                }
+                Logger::print("\n");
+            };
+        },
+        __("get controller class configuration")
+    ],
+    "--set:configs" => [
+        function ($v, $command) {
+            $command->exec = function ($command, $classname = null, $path = null, $value = null) {
+                if (($c = igk_getctrl($classname, false)) && !empty($path)) {
+                    
+                    $c->Configs->$path = $value;
+                    $c->Configs->storeConfig();
+                    Logger::success("Change configs");
+                }
+                Logger::print("\n");
+            };
+        },
+        __("set controller's configuration")
+    ],
+
+    "--set:sysconfigs" => [
+        function ($v, $command) {
+            $command->exec = function ($command, $name = null, $value = null) {
+                if (!empty($name)) {
+                    igk_app()->Configs->$name = $value;
+                    igk_save_config(true);
+                    Logger::print("");
+                    Logger::success("configuration changed");
+                    Logger::print("");
+                }
+            };
+        },
+        __("set configuration")
+    ],
+
+    "--db:seed" => [function ($v, $command) {
+        $command->exec = function ($command, $ctrl=null, $class = null) {
+            DbCommand::Init($command);
+            
+            if ($ctrl){ 
+               if($c = igk_getctrl($ctrl, false)) {
+
+                $inf = get_class($c);
+                if (!empty($class))
+                    $inf .= "::" . $class;
+                Logger::print("seed..." . $inf . " " . igk_environment()->querydebug);
+                $c::seed($class);
+                Logger::success("seed complete");
+                return 1;
+               }
+               else {
+                   Logger::danger("controller [$ctrl] not found");
+               }
+            }else{
+                $c = igk_sys_getall_ctrl();
+                foreach($c as $t){
+                    $t::register_autoload();
+                    Logger::info("seed:".get_class($t));
+                    if ($t::seed()){
+                        Logger::success("seed:".get_class($t));
+                    }
+                }
+            }
+            return -1;
+        };
+    }, __("seed your data base with face controller"), "db"],
+    "--db:migrate" => [function ($v, $command) {
+        $command->exec = function ($command, $ctrl=null) {
+            DbCommand::Init($command);
+            if ($c = igk_getctrl($ctrl, false)) {
+                $command->app->print("migrate...");
+                $c::migrate();
+            }else {
+                $c = igk_sys_getall_ctrl();
+                foreach($c as $t){
+                    Logger::info("migrate:".get_class($t));
+                    if ($t::migrate()){
+                        Logger::success("migrate:".get_class($t));
+                    }
+                }
+            }
+        };
+    }, __("migrate your database"), "db"],
+    "--db:initdb" => [function ($v, $command) {
+        $command->exec = function ($command, $ctrl = "") {
+            $c = null; 
+            DbCommand::Init($command);
+            
+            if (!empty($ctrl)) {
+                if (!($ctrl = igk_getctrl($ctrl, false))) {
+                    Logger::danger("no countroller found");
+                    return -1;
+                }
+                $c = [$ctrl];
+            } else {
+                $c = igk_app()->getControllerManager()->getControllers();
+            }
+            if ($c) {
+                foreach ($c as $m) {
+                    if ($m->getCanInitDb()) {
+                        Logger::info("init: " . get_class($m)); 
+                        $m::initDb();
+                        Logger::success("complete: " . get_class($m));
+                    }
+                }
+                return 1;
+            }
+            return -1;
+        };
+        return 0;
+    }, __("initialize database"), "db"],
+    "--dbsys:initdb" => [function ($v, $command) {
+        $command->exec = function ($command) {
+            DbCommand::Init($command);
+            if ($c = igk_getctrl(IGK_SYSDB_CTRL, false)) {
+                $c::Invoke($c, 'initDb');
+            }
+            return 0;
+        };
+    }, __("initialize system database"), "db"],
+    "--controller:list" => [function ($v, $command) {
+        $command->exec = function ($command, $pattern = ".+") {
+
+            $c = igk_app()->getControllerManager()->getControllers();
+            $t = [];
+            foreach ($c as $m) {
+                if (preg_match("#" . $pattern . "#", $cl = get_class($m))) {
+                    $t[] = $cl;
+                }
+            }
+            Logger::print(implode("\n", $t));
+            return 1;
+        };
+    }, __("list all controller"), "controller"],
+
+    "--make:page" => [
+        function ($v, $command) {
+            $command->exec = function ($command, $ctrl, $page) {
+                $ctrl = str_replace("/", "\\", $ctrl);
+                // igk_wln_e($c = $ctrl::ctrl());
+                Logger::info("make page:".$ctrl);
+                if (($c = igk_getctrl($ctrl, false)) || ($c = $ctrl::ctrl())) {
+                    $path = "Pages/" . ucfirst($page) . "Page";
+
+                    if (!($t = $c::resolvClass($path))) {
+
+                        $builder = new PHPScriptBuilder();
+                        $builder
+                            ->author($command->app->getConfigs()->get("author", IGK_AUTHOR))
+                            ->type("class")
+                            ->file("$path.php")
+                            ->name(ucfirst($page) . "Page")
+                            ->extends(ControllerTask::class)
+                            ->implements()
+                            ->desc(igk_getv($command->options, "--desc"))
+                            ->defs("public function index(){\n}")
+                            ->namespace($c::ns("Pages"));
+                        igk_io_w2file($c::classdir() . "/{$path}.php", $builder->render());
+                        Logger::success("complete page:".$path);
+                    }
+                    return 200;
+                }
+                else{
+                    Logger::danger("failed : controller not found");
+                }
+                //igk_wln_e("make page done", $c, func_get_args(), $command->options); // , $ctrl, $page, $c, $t);
+            };
+        }, [
+            "desc" => __("make a new page. controller name [options]"),
+            "help" => (object)[]
+        ],
+        "make"
+    ],
+    "--run" => [function ($v, $command) {
+        $command->exec = function ($command, $file) {
+            try {
+                if (file_exists($file)) {
+                    include($file);
+                } else {
+                    igk_wln("file not present");
+                }
+            } catch (Throwable $ex) {
+                Logger::danger(":" . $ex->getMessage());
+                return false;
+            }
+            return 0;
+        };
+    }, __("run script by loading")],
+    "--run:cron" => [function ($v, $command) {
+        $command->exec = function ($command, $ctrl = null) {
+            try {
+                $ctrl = igk_getctrl($ctrl, false);
+                $condition = ["crons_process" => 0];
+                if ($ctrl) {
+                    $condition["crons_class"] = get_class($ctrl);
+                }
+                $rows = Crons::select_all($condition); // 
+                foreach ($rows as $r) {
+
+                    if ($provider = CronJobProcess::GetJobProcessProvider($r->crons_script)) {
+                        if ($provider->exec($r->crons_name, json_decode($r->crons_options), $ctrl)) {
+                            $r->crons_process = 1;
+                            Logger::success("success :" . $r->crons_name);
+                        } else {
+                            $r->crons_process = -1;
+                            Logger::danger("failed :" . $r->crons_name);
+                        }
+                    }
+                    $r->update();
+                }
+            } catch (Throwable $ex) {
+                Logger::danger(":" . $ex->getMessage());
+                return false;
+            }
+            return 0;
+        };
+    }, __("run script by loading")],
+
+    // "--install-site"=>function(){
+    // },
+    // "--install-project"=>function(){
+    // },
+    // "--install-module"=>function(){
+    // },
+    // "--install-service"=>function(){
+    // },
+    // "--install-composer-package"=>function(){
+    // },
+    // "--validate-config"=>function(){ // validate configuration
+    // },
+    // "config:create"=>function(){ //new configuration
+    // },
+    "-v, --version" => [function ($arg, $command) {
+        $command->exec = function () {
+            echo IGK_VERSION . "\n";
+            return 200;
+        };
+    }, "show the current version"],
+    "--help" => [function ($arg, $command) {
+        if ($command->exec) {
+            $command->options->{"--help"} = "1";
+        } else {
+            $command->exec = function ($command) {
+                $command->app->showHelp();
+                return 200;
+            };
+        }
+        return 200;
+    }, ["desc"=>"show help or activate help option for a command"], "info"]   
+];
+
+//-------------------------------------------------------------------------------
+// + register class command definition
+// +
+// class DefinitionCommand extends AppCommand{
+
+//     var $command = "--print";
+
+//     public function run($args, $command) { 
+
+//         Logger::print("Logger Add ");
+//     }
+
+// }
+
+if (isset($argv[1]) && $argv[1]=="--init"){
+    //-----------------------------------------------------------------------------
+    // | initialize balafon configuration 
+    // |
+    $init_data = igk_createxmlnode("balafon");
+    $config = new IGK\System\Console\AppConfigs();
+    $config->init($init_data);
+    igk_io_w2file(getcwd()."/balafon.config.xml", $init_data->render());
+    exit(1);
+}
+ 
+//--------------------------------------------------------------------------------
+// | Run the application
+// |
+$status = IGK\System\Console\App::Run($command);
+
+//--------------------------------------------------------------------------------
+// | finish with status code
+// |
+exit($status);

@@ -1,0 +1,6 @@
+<?php
+namespace IGK;
+
+class IGKRegex{
+    const IGK_CSS_CHILD_EXPRESSION_REGEX = IGK_CSS_CHILD_EXPRESSION_REGEX;
+}

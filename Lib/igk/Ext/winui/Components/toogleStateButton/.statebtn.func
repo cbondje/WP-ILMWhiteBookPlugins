@@ -1,0 +1,9 @@
+//!#<?php
+//file: Lib\igk\Ext\WinUI\Components\toogleStateButton\.statebtn.func
+// igk_ilog("include : ".__FILE__);
+// igk_ilog("include : ".$CF->getViewDir()."/".$type.".state");
+$ctx = $extra[0];
+$doc = $ctx->Document;
+//windonw 10 notification style
+include(igk_io_dir($CF->getViewDir()."/".$type.".state"));
+return true;

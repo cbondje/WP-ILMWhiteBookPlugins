@@ -1,0 +1,41 @@
+<?php
+// @file: exceptions.page.pinc
+// @author: C.A.D. BONDJE DOUE
+// @description:
+// @copyright: igkdev © 2020
+// @license: Microsoft MIT License. For more information read license.txt
+// @company: IGKDEV
+// @mail: bondje.doue@igkdev.com
+// @url: https://www.igkdev.com
+
+?>
+<!DOCTYPE html >
+<html>
+<head>
+<title>{$r('title.fatalError')}</title>
+{$scripts}
+<link href="https://fonts.googleapis.com/css?family=Roboto+Condensed&&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css?family=Roboto+Slab&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css?family=Material+Icons&display=swap" rel="stylesheet" />
+<style>
+html, body{
+    padding:0px;
+    margin:0px;
+    height:100%;
+    width:100%;
+}
+body{
+    background-color:#fefefe;
+    overflow-y:auto;
+}
+table{
+    background-color:#fefefe;
+}
+{$trace_css}
+</style>
+</head>
+<body onload="javascript:window.igk_init(); return false;" class="google-Roboto exception" >
+{$content}
+</body>
+</html>

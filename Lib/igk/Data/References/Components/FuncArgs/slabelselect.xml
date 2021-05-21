@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Slabelselect><attr name="id" required="1"></attr><attr name="values" required="1"></attr><attr name="valuekey"></attr><attr name="defaultCallback"></attr><attr name="required"></attr></Slabelselect>

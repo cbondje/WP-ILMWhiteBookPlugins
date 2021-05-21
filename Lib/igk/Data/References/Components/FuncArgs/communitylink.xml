@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CommunityLink>
+<attr name="name" required="1" desc="nom du réseau social"></attr>
+<attr name="link" required="1" desc="uri du réseau social"></attr>
+</CommunityLink>

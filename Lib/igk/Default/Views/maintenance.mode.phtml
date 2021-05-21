@@ -1,0 +1,17 @@
+<?php
+// @author: C.A.D BONDJE DOUE
+// @version: 1.0
+// @description: maintenance index
+/**
+ * maintenance application runner
+ */
+class Maintenance{
+    public static function Run(){
+        echo "<html><head><title>Maintenance Mode</title></head><body><div>Maintenance mode</div></body></html>";
+        return 1;
+    }
+}
+
+$response = Maintenance::Run();
+
+exit($response);

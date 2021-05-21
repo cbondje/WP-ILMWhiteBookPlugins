@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SubmitBtn><attr name="name" def-v="btn_"></attr><attr name="key" def-v="btn.add"></attr></SubmitBtn>
