@@ -1,8 +1,0 @@
-#export db to json 
-balafon --db:schema -option:json /Volumes/Data/wwwroot/sites/8804.tbn/src/application/Projects/white_books/Data/data.schema.xml
-#export css definition
-balafon --css:dist > /Volumes/Data/wwwroot/sites/8901/src/public/wp-content/plugins/ILYEUM_WhiteBook/core/WhiteBooks/assets/css/core.css
-#export balafon.zip
-balafon --js:dist > /Volumes/Data/wwwroot/sites/8901/src/public/wp-content/plugins/ILYEUM_WhiteBook/core/WhiteBooks/assets/js/balafon.js
-#zip plugins
-balafon --zipwp_plugin /Volumes/Data/Dev/companies/ILYEUM/WPPlugins/ILYEUM_WhiteBook
