@@ -68,7 +68,7 @@ class driver{
             foreach($this->m_relations as $tbname=>$r){
                 foreach($r as $m=>$p){
                     $c = $p["column"];
-                    $c->clLinkType = Utility::GetTableName( $c->clLinkType );
+                    $c->clLinkType = Utility::GetTableName( $c->clLinkType ); 
                     if (! $this->sendQuery($query = $this->getGrammar()->add_foreign_key( $tbname, $c))){
                         _log(implode("\n", ["query failed: ",$query, $this->last_error()]));
                     }
@@ -106,6 +106,55 @@ class driver{
     public function GetExpressQuery(){
         
     }
+    protected static function ResolvType($type){
+        switch(strtolower($type)){
+            case "int":
+            return "Int";
+            case "varchar":
+            return "VARCHAR";
+        }
+        return strtoupper($type);
+    }
+    public function getColumnInfo($table){
+        $data =  $this->getGrammar()->get_column_info($table);
+        $outdata = [];
+        array_map(function($v)use($table, & $outdata){            
+            $cl = [];
+            $ctype = trim($v->Type);
+            $tab=array();
+            $ctype = trim($v->Type);
+            preg_match_all("/^((?P<type>([^\(\))]+)))\\s*((\((?P<length>([0-9]+))\)){0,1}|(.+)?)$/i", trim($v->Type), $tab);
+
+            $cl["clType"]= static::ResolvType(getv($tab["type"], 0, "Int"));
+            if (strtolower($cl["clType"]) =="enum"){
+                $cl["clEnumValues"] = substr($ctype, strpos($ctype, "(")+1,-1); 
+            }else{
+                $cl["clTypeLength"]=getv($tab["length"], 0, 0);
+            }
+            if($v->Default)
+                $cl["clDefault"]=$v->Default;
+            if($v->Comment){
+                $cl["clDescription"]=$v->Comment;
+            }
+            $cl["clAutoIncrement"]=preg_match("/auto_increment/i", $v->Extra) ? "True": null;
+            $cl["clNotNull"]=preg_match("/NO/i", $v->Null) ? "True": null;
+            $cl["clIsPrimary"]=preg_match("/PRI/i", $v->Key) ? "True": null;
+            $cl["clIsUnique"]=preg_match("/UNI/i", $v->Key) ? "True": null;
+            if(preg_match("/(MUL|UNI)/i", $v->Key)){
+                $rel= $this->getGrammar()->get_relation($table, $v->Field, $this->getDbName());
+                if($rel){
+                    $cl["clLinkType"]=$rel->REFERENCED_TABLE_NAME;
+                }
+            }
+            if (!empty($v->Extra) && (($cpos = strpos($v->Extra, "on update "))!==false)){
+                $c = trim(substr($v->Extra, $cpos+10));
+                if (in_array($c, ["CURRENT_TIMESTAMP"]))
+                    $cl["clUpdateFunction"] = "Now()";
+            }
+            $outdata[$v->Field] = (object)$cl;
+        }, $data);
+        return $outdata;
+    }
     public function sendQuery($query, $options=null){
         if (ilm_environment()->querydebug){
             if (function_exists("igk_wln")){
@@ -116,7 +165,7 @@ class driver{
             if (is_bool($g)){
                 return $g;
             }
-            $fc = getv($options, "@filter");
+            $fc = getv($options, "@callback");
             $tab = [];
             $cols = null; 
             while($row = mysqli_fetch_assoc($g)){   
@@ -170,7 +219,7 @@ class driver{
     }
     public function select($tablename, $conditions=null, $options=null){
         $query = $this->getGrammar()->createSelectQuery($tablename, $conditions, $options);
-        $g =  $this->sendQuery($query);
+        $g =  $this->sendQuery($query, $options);
         return $g;
     }
     public function isTypeSupported($type){

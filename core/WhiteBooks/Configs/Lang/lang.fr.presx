@@ -2,5 +2,31 @@
 
 $l["Book download flow"] = "OK";
 $l["Book not found"] = "Le livre n'as pas été trouver";
-$l["Books not found"] = "Aucun livre blanc trouver";
+$l["No books founds."] = "Aucun livre blanc trouvé";
 $l["Book Details"] = "Details du livre"; 
+$l["book_File"] = "Fichier";
+$l["article_id"] = "Article";
+$l["book_name"] = "Nom";
+$l["book_title"] = "Titre";
+$l["book_desc"] = "Description";
+$l["add book"] = "Ajouter un livre";
+$l["add"] = "Ajouter";
+$l["White Books"] = "Livre Blanc";
+$l["Books"] = "Livres";
+$l["Clients"] = "Clients";
+$l["Options"] = "Options";
+$l[ "book title"] = "titre du livre";
+$l[ "book name"] = "identifiant du livre";
+$l[ "picture"] = "image";
+$l[ "name"] = "nom";
+$l[ "download"] = "téléverser";
+$l[ "title"] = "titre";
+$l[ "desc"] = "description";
+$l[ "ILM - WhiteBook"] = "ILM - LivresBlanc";
+$l[ "No Clients founds."] = "(0) client enregistrer";
+$l[ "Please register Before download."] = "Vous pouvez remplir ce formulaire qui nous permettra de vous faire parvenir les actualités, société éditrice, ainsi que toutes les informations liées aux évolutions de nos produits;";
+$l[ "Get Book"] = "Obtenir le livre blanc";
+$l[ "LastName"] = "Nom";
+$l[ "FirstName"] = "Prenom";
+$l[ "Email"] = "E-Mail";
+

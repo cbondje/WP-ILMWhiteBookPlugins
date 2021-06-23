@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<TrackBarNode desc="system global trackbar node. input ">
-    <attr name="id" required="1" desc="id of that will identifier the input" type="string" ></attr>
-    <attr name="value" required="1" desc="the value of the trackbar" type="int"></attr>
-    <attr name="min" def-v="0" desc="the minimum value. default is 0" type="int"></attr>
-    <attr name="max" def-v="100" desc="the maximum value" type="int"></attr>
-</TrackBarNode>

@@ -1,7 +1,0 @@
-<?php
-
-if (!function_exists("__")){
-	function __(){
-		return call_user_func_array("igk_resources_gets", func_get_args());
-	}
-}

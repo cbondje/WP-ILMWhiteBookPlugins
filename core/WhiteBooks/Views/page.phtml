@@ -1,9 +1,28 @@
-<?php 
+<?php
+
+use ILYEUM\WhiteBooks\Models\Books;
+
+use function ilm_getv as getv;
 
 get_header();
+$id = 1;
+// $args = array_filter(explode("/", parse_url(ilm_server()->REQUEST_URI, PHP_URL_PATH))); 
+ 
+$action = getv($args, 0);
 
-//page defined;
-
+switch($action){
+    case "download":
+        $id = getv($args, 1, 1);
+        if ($book = Books::select_row($id)){
+        // | page entry view
+        // echo "donwload";
+        echo "<script language=\"javascript\">(function(\$){\$(document).ready(function(){ ilyeum.wp.GetBookFlow('./wbook/download', {$id}, true);  }); })(jQuery)";
+        echo "</script>";
+        }else{
+            echo "<p class=\"danger\">".__("Oups sorry $id requested book not found")."</p>";
+        }
+        break;
+}
 
 get_footer();
 exit;

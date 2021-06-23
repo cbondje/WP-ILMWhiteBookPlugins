@@ -8,12 +8,15 @@
 * Author URI: //ilyeum.com
 */
 
+ 
 if (file_exists($f = __DIR__."/core/App.php" ))
 {
+    // $_SERVER['REQUEST_METHOD'] = "POST";
+    // require_once("/Volumes/Data/wwwroot/sites/8901/src/public/wp-blog-header.php");
     // ---------------------------------------------
     // | bootstrap core puglins
     // ---------------------------------------------
     require_once($f);
     unset($f);
-    ILYEUM\App::boot(__FILE__);
+    ILYEUM\App::boot(__FILE__);   
 }

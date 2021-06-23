@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<TouchRollOwner parent="" >
-	<attr name="Roll" desc="readonly. get the Roll Node"/>
-	<attr name="Content" desc="readonly. get the Content node"/>
-</TouchRollOwner>

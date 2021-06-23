@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<WebglGameSurface>
-<attr name="listener"
-desc="javascript full qualified name class that will be used to initialize the WebglGameSurcface"
-fr="Nom de class complet javascript utiliser pour initialiser la surface de jeu">
-</attr>
-</WebglGameSurface>

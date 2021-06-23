@@ -1,2 +1,0 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<LabelInput><attr name="id" require="1"></attr><attr name="text" require="1"></attr><attr name="type" def-v="text"></attr><attr name="value"></attr><attr name="attributes"></attr><attr name="require"></attr><attr name="description"></attr></LabelInput>

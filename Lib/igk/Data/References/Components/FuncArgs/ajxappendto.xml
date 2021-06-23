@@ -1,2 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<ajxappendto><attr name="cibling" required="1" desc="expression of the query node. ex: $igk('.target')"></attr></ajxappendto>

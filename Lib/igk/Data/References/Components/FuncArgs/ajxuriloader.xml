@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<AjxUriloader>
-    <attr name="uri" required="1" desc="uri to load" type="string">
-        <fr>URL a charger</fr>
-    </attr>
-    <attr name="append" def-v="0" type="1|0" desc="append or replace the content">
-        <fr>1 ajoute le contenue renvoyer a la suite du dernier noeud du noeud parent.</fr>
-    </attr>
-</AjxUriloader>

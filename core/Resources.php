@@ -8,7 +8,7 @@ namespace ILYEUM;
 
 class Resources{
     public function gets($text){
-        return ilm_getv($this->m_resources, $text, $text);
+        return ilm_getv($this->m_resources, strtolower($text), $text);
     }
     public function __construct(){
         $this->_init_resources();
@@ -16,6 +16,7 @@ class Resources{
     private function _init_resources(){
         $l=[];
         include(ILM_WHITE_BOOK_DIR."/Configs/Lang/lang.fr.presx");
+        $l = array_change_key_case($l, CASE_LOWER);
         $this->m_resources = $l;
     }
 }

@@ -1,26 +1,18 @@
 <?php
 namespace ILYEUM\WhiteBooks\Models;
 
+use Closure;
 use ILYEUM\database\QueryBuilder;
 use ILYEUM\Exception as Exception;
 use function ilm_getv as getv;
 use function ilm_db_get_table_info as db_get_table_info;
 use function count as fcount;
-use function stprintf as __;
+use function ilm_resources_gets as __;
+use function ilm_environment as environment;
+use function ilm_get_robjs as get_robjs;
 
 
-if (!function_exists('form_input_type')){
-    function form_input_type($type){
-        static $requireInput;
-        if ($requireInput===null){
-            $requireInput  = explode("|", "text|email|password");
-        } 
-        if (in_array($type, $requireInput)){ 
-            return $type;
-        }
-        return "text";
-    }
-}
+
 
 abstract class ModelEntryExtension{
 
@@ -99,6 +91,7 @@ abstract class ModelEntryExtension{
   
     
     public static function select_all(ModelBase $model, $conditions=null, $options=null){ 
+     
         $tab = [];
         $driver = $model->getDataAdapter();   
         $cl = get_class($model);
@@ -107,7 +100,7 @@ abstract class ModelEntryExtension{
                 $c = new $cl($row->toArray());  
                 $tab[] = $c;
             }  
-        }
+        } 
         return $tab;
     }
     public static function count(ModelBase $model, $conditions=null, $options=null){  
@@ -189,7 +182,7 @@ abstract class ModelEntryExtension{
         return $driver->delete($model->getTable(), $conditions);
     }
     public static function insert(ModelBase $model, $entries){ 
-        $ad = $model->getDataAdapter();
+        $ad = $model->getDataAdapter(); 
         if ( $ad->insert($model->getTable(), $entries, $model->getTableInfo())){
             return $model::select_row([$model->getPrimaryKey()=>$ad->last_id()]);            
         } 
@@ -263,12 +256,8 @@ abstract class ModelEntryExtension{
         $cl = $model->getFormFields();
         $t = [];
         $inf = [];
-        $tablekey = $model->getTableInfo(); 
+        $inf = $model->getTableInfo(); 
         $ctrl = $model->getController();
-        array_map(function($b)use (& $inf){
-            $inf[$b->clName]  = $b;
-        }, $tablekey["ColumnInfo"]);
- 
         $binfo = [];
 
         $b = (fcount($cl)>0) ? $cl : array_keys($model->to_array());
@@ -379,6 +368,7 @@ abstract class ModelEntryExtension{
         $t["::model"]=["type"=>"hidden", "value"=>base64_encode(get_class($model))];
         if ($ctrl)
         $t["::ctrl"]=["type"=>"hidden", "value"=>base64_encode(get_class($ctrl))];
+
         return $t;
     }
     ///<summary>return the model table name</summary>
@@ -532,7 +522,7 @@ abstract class ModelEntryExtension{
     //     $driver = $model->getDataAdapter();
     //     return $driver->last_id(); 
     // } 
-    public static function select_row(ModelBase $model, $conditions=null, $options=null){
+   public static function select_row(ModelBase $model, $conditions=null, $options=null){
         $driver = $model->getDataAdapter();
         $cl = get_class($model);   
         if (is_numeric($conditions)){
@@ -544,5 +534,23 @@ abstract class ModelEntryExtension{
             return new $cl($g->toArray());  
         }
         return null;
+    } 
+    public static function select_all_filter(ModelBase $model, Closure $callback,  $conditions=null, $options=null){
+        $driver = $model->getDataAdapter();
+        $cl = get_class($model);   
+        if (is_numeric($conditions)){
+            $conditions = [$model->getPrimaryKey()=>$conditions]; 
+        }
+        if ($options===null){
+            $options = [];
+        }
+        $options["@callback"] = $callback;
+        return  $driver->select($model->getTable(), $conditions, $options);        
+        
+    } 
+
+    public static function getDataAdapter(ModelBase $model){
+        return ilm_environment()->getClassInstance(\ILYEUM\wp\database\driver::class);
     }
+    
 }

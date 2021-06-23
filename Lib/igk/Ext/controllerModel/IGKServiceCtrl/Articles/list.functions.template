@@ -1,5 +1,0 @@
-<div class="igk-col igk-col-view-box igk-service-box igk-row fitw" *for="$raw" style="margin-bottom:1em">
-    <div class="func"><b>  {{ $ctrl->getServiceViewTitle($raw) }}</b></div>
-    <div class="desc">  {{ $ctrl->getDesc($raw) }}</div>
-    <div class="extra"> {{ $ctrl->getExtra($raw)}}</div>
-</div>

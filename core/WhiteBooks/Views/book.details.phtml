@@ -1,4 +1,15 @@
+<?php
+// file: books.phtml
+// author: C.A.D. BONDJE DOUE
+// desc: download view
+use function ilm_resources_gets as __;
+
+?>
 <h3><?= $book->book_title ?></h3>
 <div><?= $book->book_name ?></div>
 <p><?= $book->book_desc ?></p>
-<a href="/wbook/download/<?= $book->book_id ?>" class="button"> download </a>
+
+<p class="wb-article-view"><?= isset($book->book_article_id) ? "" :"" ?></p>
+<div>
+<a href="/wbook/download/<?= $book->book_id ?>" class="button"><?= __("download") ?></a>
+</div>

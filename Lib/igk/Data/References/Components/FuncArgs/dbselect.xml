@@ -1,2 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<DbSelect><attr name="name" require="1"></attr><attr name="result" require="1"></attr><attr name="callback"></attr><attr name="valuekey" def-v="clId"></attr></DbSelect>

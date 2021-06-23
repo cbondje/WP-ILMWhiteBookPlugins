@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<ajxa>
-    <attr name="lnk" fr="Le lien" require="1"></attr>
-    <attr name="target" fr="cible du resultat"></attr>
-    <attr name="method" fr="methode par défaut de la requete. POST est la valeur par defaut"></attr>
-    <attr name="replacemode" def-v="content"></attr>
-</ajxa>

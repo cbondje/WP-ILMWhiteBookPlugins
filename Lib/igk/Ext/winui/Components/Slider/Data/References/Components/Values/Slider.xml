@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Slider parent="" >
-	<attr name="Orientation" desc="get or set the orientation of the slider. (horizontal|vertical)"  />
-</Slider>

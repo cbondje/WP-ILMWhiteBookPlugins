@@ -104,12 +104,14 @@ abstract class ModelBase{
     public function getDisplay(){
         return $this->display;
     }
-    
+    protected function create_row(){
+        return  ilm_db_create_row($this->table);
+    }
     
 
     public function __construct($raw=null)
     {
-        $this->raw = ilm_db_create_row($this->table);
+        $this->raw = $this->create_row();
         if (!$this->raw ){
             die("failed to create db row: ".$this->getTable());
         } 
@@ -169,9 +171,7 @@ abstract class ModelBase{
     public function getController(){
         return getctrl();
     }
-    public function getDataAdapter(){
-        return ilm_environment()->getClassInstance(\ILYEUM\wp\database\driver::class);
-    }
+  
 
     /**
      * disable debug
@@ -201,8 +201,7 @@ abstract class ModelBase{
                     if ($c->raw){ 
                         if ($g = $c->insert($c->raw)){                                                          
                             $c->raw = $g->raw;
-                        }else{
-                            _wln("failed to create");
+                        }else{ 
                             return null;
                         }
                     }

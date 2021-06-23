@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<SLabelInput><attr name="id" required="1" desc="identifier of this input" require="1"></attr><attr name="type" desc="web type of this input" def-v="text"></attr>
-<attr name="value" desc="value of this input" def-v=""></attr>
-<attr name="attributes" desc="Attributes that will be passed to created input" ></attr>
-<attr name="require" desc="1 to indicate that this input field is required" def-v="1" ></attr><attr name="description" desc="internal description of this item"></attr>
-</SLabelInput>

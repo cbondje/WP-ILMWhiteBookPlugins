@@ -1,6 +1,7 @@
 <?php
 namespace ILYEUM\WhiteBooks\Widgets;
 
+use ILYEUM\WhiteBooks\Models\BookClients;
 use ILYEUM\WhiteBooks\Models\Books as BookModel;
 use ReflectionException;
 use WP_Widget;
@@ -43,11 +44,12 @@ class Books extends WidgetBase{
         $d->h2()->setClass("widget-title")->Content = __("Books");
         $dv = $d->div();
         if ($books){ 
-            getctrl()->loader->view("books", ["books"=>$books]);
+            $dv->div()->obdata(function()use($books){
+                getctrl()->loader->view("books", ["books"=>$books]);
+            });
         }else{
             $dv->Content = __("Books not found");
         }
         $d->renderAJX();
-    }
-   
+    }   
 }

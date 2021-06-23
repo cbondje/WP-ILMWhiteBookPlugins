@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<arraylist><attr name="list" desc="Array list to show" require="1" type="assoc-array"></attr>
-<attr name="tag" def-v="li" type="string" desc="TagName of node to add"></attr>
-<attr name="callback" type="callback" desc="function to call to initialize the node"></attr></arraylist>

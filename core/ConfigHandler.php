@@ -7,6 +7,7 @@ namespace ILYEUM;
 
 use ArrayAccess;
 use Iterator;
+use function ilm_getv as getv;
 
 /**
  * configuration handler
@@ -74,12 +75,11 @@ class ConfigHandler implements Iterator, ArrayAccess{
         }
     }
 
-    public function rewind() {        
-        $key = key($this->m_items);
+    public function rewind() {         
         $this->_it = (object)["keys"=>array_keys($this->m_items), "index"=>0];
      }
     public function __get($n){
-        return ilm_getv($this->m_items, $n);
+        return getv($this->m_items, $n);
     }
     public function __set($n, $v){
         $this->m_items[$n] = $v;
@@ -87,4 +87,7 @@ class ConfigHandler implements Iterator, ArrayAccess{
     public function toArray(){
         return $this->m_items;
     } 
+    public function get($n, $default=null){
+        return getv($this->m_items, $n, $default);
+    }
 }

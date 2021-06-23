@@ -2,20 +2,37 @@
 
 namespace ILYEUM;
 
+use IGKApp;
 use ILYEUM\wp\actions;
 if (!defined("IGK_FRAMEWORK")){
+    define("IGK_APP_DIR", realpath(__DIR__."/../")."/application");
+    if (isset($_SERVER["ENVIRONMENT"]) && ($_SERVER["ENVIRONMENT"] == "development")){
+        defined('IGK_DEFAULT_FOLDER_MASK') || define('IGK_DEFAULT_FOLDER_MASK', 0777);
+        defined('IGK_DEFAULT_FILE_MASK') || define('IGK_DEFAULT_FILE_MASK', 0775);
+    }
+    define('IGK_NO_WEB', 1);
+    defined('IGK_BASE_DIR') || define('IGK_BASE_DIR',realpath(__DIR__."/../"));
+    defined('IGK_NO_TEMPLATE') && define('IGK_NO_TEMPLATE', 1);
     if (file_exists($fc = dirname(__FILE__)."/../Lib/igk/igk_framework.php")){
         require_once($fc);
+    } else {
+        die("require framework missing");
     }
 }
 require_once(__DIR__."/core.php");
 require_once(__DIR__."/functions.php");
 require_once(__DIR__."/ConfigHandler.php");
+
+
+
+
 class App{
     private static $sm_instance;
 
     private $configs; 
     private $plugin_file;
+    private $core_app;
+
 
     public function getPluginFile(){
         return $this->plugin_file;
@@ -33,7 +50,7 @@ class App{
         return self::$sm_instance;
     }
     public function loadJsonConfig($name){
-        if (file_exists($file = implode(DIRECTORY_SEPARATOR, [ILM_BASE_DIR, "configs/{$name}"]))){
+        if (file_exists($file = implode(DIRECTORY_SEPARATOR, [self::$sm_instance->configs->config_dir, "{$name}"]))){
             return json_decode(file_get_contents($file));
         }
         return null;
@@ -75,8 +92,7 @@ class App{
      */
     private function __construct(){
     }
-    private function initialize(){ 
-        
+    private function initialize(){        
         $configs = [];
         require(ILM_WHITE_BOOK_DIR."/Configs/config.php");
         $this->configs = new ConfigHandler($configs); 
@@ -94,5 +110,9 @@ class App{
 				register_widget($k);
 			}
 		}); 
+        igk_environment()->basedir = rtrim(plugin_dir_path($this->plugin_file), "/");        
+        $this->core_app = IGKApp::InitNewInstance();
     }
 }
+
+ 

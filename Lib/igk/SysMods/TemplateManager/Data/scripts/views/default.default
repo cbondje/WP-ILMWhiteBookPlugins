@@ -1,4 +1,0 @@
-<?php
-$doc->Title = $this->Manifest->clTitle;
-$t->clearChilds();
-?>

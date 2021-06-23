@@ -298,15 +298,22 @@ class Grammar{
         $adapter  = $this->m_driver;
         $q = "ALTER TABLE ";
         $q .= "`".$table."` DROP ";
-        $q .= $adapter->escape($name); 
+        $q .= $adapter->escape_string($name); 
         return $q;
     }
     public function rename_column($table, $column, $new_name){
         $adapter  = $this->m_driver;
         $q = "ALTER TABLE ";
         $q .= "`".$table."` RENAME COLUMN ";
-        $q .= $adapter->escape($column) ." TO ".$adapter->escape($new_name); 
+        $q .= $adapter->escape_string($column) ." TO ".$adapter->escape_string($new_name); 
         return $q;
+    }
+    public function get_column_info($table, $db=null){
+        if ($db===null){
+            $db = $this->m_driver->getDbName();
+        }
+        $table = self::GetKey(implode(".", array_filter([$db, $table])), $this->m_driver);
+        return $this->m_driver->sendQuery("SHOW FULL COLUMNS FROM ".$this->m_driver->escape_string($table)."");
     }
 
     public function change_column($table, $info){
@@ -314,7 +321,7 @@ class Grammar{
         $adapter  = $this->m_driver;
         $q = "ALTER TABLE ";
         $q .= "`".$table."` CHANGE ";
-        $q .= $adapter->escape($column) ." ".$adapter->escape($column) ." ".rtrim($this->getColumnInfo($info));
+        $q .= $adapter->escape_string($column) ." ".$adapter->escape_string($column) ." ".rtrim($this->getColumnInfo($info));
         return $q;
     }
     /**
@@ -337,6 +344,22 @@ class Grammar{
         }
         return $row !=null;
     }
+    /**
+     * get relation link 
+     * @param mixed $tbname 
+     * @param mixed $clname 
+     * @param mixed $db 
+     * @return mixed 
+     */
+    public function get_relation($tbname, $clname, $db){
+        if ($h=$this->m_driver->sendQuery("SELECT * FROM `information_schema`.`KEY_COLUMN_USAGE` WHERE `TABLE_NAME`='".
+        $this->m_driver->escape_string($tbname)."' AND `TABLE_SCHEMA`='".
+        $this->m_driver->escape_string($db)."' AND `COLUMN_NAME`='".
+        $this->m_driver->escape_string($clname)."' AND `REFERENCED_TABLE_NAME`!=''")){
+            return $h[0];
+        } 
+        return null;
+    }
     public function remove_foreign($table, $info, $db=null){
         $adapter  = $this->m_driver;
         $db= $db ?? $adapter->getDbName();
@@ -352,7 +375,7 @@ class Grammar{
         if ($ck = getv(array_values($columns), 0)){
             $q  = "ALTER TABLE ";
             $q .= "`".$table."` DROP FOREIGN KEY ";
-            $q .= $adapter->escape($ck) ." "; 
+            $q .= $adapter->escape_string($ck) ." "; 
             return $q;
         }
         return null;
@@ -986,15 +1009,14 @@ class Grammar{
                     case "OrderBy":
                         // igk_wln_e("order by", $v);
                         if (is_array($v)){                       
-                            $torder = "";
-                            $c = "";
+                            $torder = ""; 
                             foreach($v as $s){
                                 
                                 $g = explode("|", $s);
                                 $type = getv($g, 1, $defOrder);
 
 
-                                $c.= self::Key($g[0], $ad,  "".$type.", ");
+                                $c = self::Key($g[0], $ad,  "".$type.", ");
                                 // $c = "`".implode("` ".$type.", `",
                                 // );         
                                 

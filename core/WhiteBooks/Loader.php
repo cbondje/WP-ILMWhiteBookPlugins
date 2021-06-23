@@ -11,12 +11,14 @@ class Loader{
     public function view($name, ...$args){
        
         $loader = (function(){
-            extract(getv(array_slice(func_get_args(), 1), 0));            
+            extract(getv(array_slice(func_get_args(), 1), 0, []));            
+            // igk_trace();
+            // igk_wln_e("to inc:".func_get_arg(0));
             include(func_get_arg(0));
         })->bindTo(getctrl());
 
         foreach([".phtml", ""] as $ext){
-            if (file_exists($fc = __DIR__."/Views/".func_get_arg(0).$ext)){
+            if (file_exists($fc = __DIR__."/Views/".$name.$ext)){
                 return $loader($fc, ...$args);
             }
         }

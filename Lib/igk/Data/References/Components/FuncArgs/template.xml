@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Template><attr name="ctrl" required="1" fr="Contrôleur utilisé comme source"></attr>
-<attr name="name" required="1" fr="fichier à utiliser"
-></attr><attr name="row" fr="paramètre à attacher"></attr></Template>

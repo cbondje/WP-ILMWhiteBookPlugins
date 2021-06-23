@@ -1,2 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<ToggleStateButton><attr name="id" desc="Id of this input" fr="identifiant de l'entré" required="true" /><attr name="checked" desc="Checked value" fr="la valeur par defaut." /><attr name="type" desc="Type of this ToggleStateButton. Default value is window10" fr="Type utilisé dans le rendu de l'input . La valeur par défaut est window10." /></ToggleStateButton><attr name="value" def-v="on"></attr>

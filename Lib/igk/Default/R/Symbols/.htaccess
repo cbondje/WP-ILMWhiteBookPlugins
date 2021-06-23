@@ -1,8 +1,0 @@
-AddType text/xml gkds
-
-<IfModule headers_module>
-<FilesMatch "\.(svg|gkds)$">
-Header set Cache-Control "max-age=31536050"
-</FilesMatch>
-</IfModule>
-

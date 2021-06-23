@@ -10,4 +10,8 @@ class Books extends ModelBase{
     protected $table = "%prefix%books";
     
     protected $primaryKey = "book_id";
+
+    protected $column_prefix = "book_";
+
+    protected $form_fields = ["book_name", "book_title", "book_desc"];
 }

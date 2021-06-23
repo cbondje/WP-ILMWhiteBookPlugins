@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<Article>
-	<attr name="ctrl" required="1" desc="Controller that containt the article"></attr>
-	<attr name="name" required="1" desc="Name or path to article"></attr>
-	<attr name="raw" required="1" desc="Raw data to bind"></attr>
-	<attr name="showAdminOption" def-v="1"></attr>
-</Article>

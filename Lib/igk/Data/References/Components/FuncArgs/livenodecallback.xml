@@ -1,2 +1,0 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<livenodecallback><attr name="listener" require="1"></attr><attr name="name" require="1"></attr><attr name="callback" require="1"></attr></livenodecallback>

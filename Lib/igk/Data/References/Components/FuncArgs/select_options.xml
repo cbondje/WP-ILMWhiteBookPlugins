@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<select_options>
-<attr name="optionsList" require="1" fr="table de donnée à transformer">tableau de donnée à transformer</attr>
-<attr name="options" fr="options de transformation" >options ajouter pour une transformation </attr>
-</select_options>

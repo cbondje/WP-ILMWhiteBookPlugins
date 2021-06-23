@@ -7,10 +7,14 @@ use function ilm_resources_gets as __;
 ?><div>    
         <?php
         foreach ($books as $book) {
-            echo "<ul class=\"col\" >";
-            echo "<li>" . $book->book_name . "</li>";
+            $desc = "";
+            echo "<ul class=\"col column\" >";
+            if ($book->book_picture){
+                echo "<li><figure><img src=\"" . $book->book_picture . "\" alt=\"".$book->book_title."\" ></img><figure></li>";
+            }
+            // echo "<li>" . $book->book_name . "</li>";
             echo "<li>" . $book->book_title . "</li>";
-            echo "<li>" . $book->book_desc . "</li>";
+            // echo "<li>" . $book->book_desc . "</li>";
             echo "<li><a href='./wbook/download/{$book->book_id}' book-id=\"{$book->book_id}\" class='button download-book-btn'>" . __("Download") . "</a></li>";
             echo "</ul>";
         }

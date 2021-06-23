@@ -8,5 +8,5 @@ namespace ILYEUM\WhiteBooks\Models;
 
 class BookClients extends ModelBase{
     protected $table = "%prefix%book_clients";
-    protected $primaryKey = "bookclient_id";
+    protected $primaryKey = "bookclients_id";
 }

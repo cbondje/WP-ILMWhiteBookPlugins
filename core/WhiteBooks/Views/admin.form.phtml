@@ -11,11 +11,431 @@
 			<p>
 				<div class="igk-action-bar">
 					<a href="#" class="button" [click]="igk.ajx.get('add',null,'');" >Add Book</a>
-					<a href="?page=ilm://white_book&action=dumpdb" class="button">Dump Pages</a>
+					<a href="?page=ilm:/white_book&action=dumpdb" class="button">Dump Pages</a>
 					<a href="#" class="button ajx-button">Dialogs</a>
 				</div>
 			</p>
 		</div>
 	</form>
-	<p>No books founds.</p>
+	<form method="POST" action="." class="igk-form">
+		<div class="content">
+			<div class="igk-table-host">
+				<table class="igk-table wp-list-table fixed striped table-view-list pages">
+					<tr>
+
+						<th><input type="checkbox" class="manage-column column-cb check-column" /></th>
+						<th>picture</th>
+						<th>name</th>
+						<th>title</th>
+						<th>desc</th>
+						<th>download</th>
+						<th>
+								&nbsp;
+						</th>
+					</tr>
+
+					<tr>
+						<td>
+							<input type="checkbox" name="list[]" id="list[]" />
+						</td>
+						<td>
+							<img src="https://via.placeholder.com/640x480.png/0077ee?text=nulla" alt="picture"></img>
+						</td>
+						<td>
+							<a href="#" [click]="igk.ajx.get('#',null,'');" >Gage Davis</a>
+						</td>
+						<td>Prof.</td>
+						<td>Quis non quia culpa est deserunt possimus ea. Qui quia eaque velit perferendis voluptatibus. Ea aut dolores in. Et reprehenderit in ut molestiae laboriosam. Dolorem accusantium qui sint. Facere a voluptas quos et totam. Autem est rerum omnis sed velit possimus sit voluptatem.</td>
+						<td>0</td>
+						<td>
+							<span class="material-icons">edit</span>
+						</td>
+						<td>
+							<span class="material-icons">delete</span>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<input type="checkbox" name="list[]" id="list[]" />
+						</td>
+						<td>
+							<img src="https://via.placeholder.com/640x480.png/00cc55?text=at" alt="picture"></img>
+						</td>
+						<td>
+							<a href="#" [click]="igk.ajx.get('#',null,'');" >Miss Carrie Steuber I</a>
+						</td>
+						<td>Miss</td>
+						<td>Natus vero quisquam dignissimos ea est totam vero. Tempore dolor eaque perferendis consequuntur quasi in consequuntur. Recusandae numquam magnam qui. Veniam ut eaque suscipit iure hic et. Esse quam aspernatur quo ipsam officiis. Laudantium voluptates voluptatem placeat explicabo suscipit quo consequatur. Distinctio voluptas ipsa ut aliquam hic ut.</td>
+						<td>0</td>
+						<td>
+							<span class="material-icons">edit</span>
+						</td>
+						<td>
+							<span class="material-icons">delete</span>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<input type="checkbox" name="list[]" id="list[]" />
+						</td>
+						<td>
+							<img src="https://via.placeholder.com/640x480.png/000011?text=in" alt="picture"></img>
+						</td>
+						<td>
+							<a href="#" [click]="igk.ajx.get('#',null,'');" >Santino Pouros</a>
+						</td>
+						<td>Dr.</td>
+						<td>Nostrum veniam qui ex. Autem laudantium quibusdam cumque. Necessitatibus rerum veritatis incidunt libero. Nobis a minus ut inventore et.</td>
+						<td>0</td>
+						<td>
+							<span class="material-icons">edit</span>
+						</td>
+						<td>
+							<span class="material-icons">delete</span>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<input type="checkbox" name="list[]" id="list[]" />
+						</td>
+						<td>
+							<img src="https://via.placeholder.com/640x480.png/00ee22?text=ut" alt="picture"></img>
+						</td>
+						<td>
+							<a href="#" [click]="igk.ajx.get('#',null,'');" >Percival Johnston</a>
+						</td>
+						<td>Dr.</td>
+						<td>Voluptate eos expedita ex ut voluptatem. Sit voluptatem quod et earum culpa. Dolores sunt enim aut explicabo facere provident. Sed ut non aut. Est voluptatibus distinctio rem sunt quidem qui.</td>
+						<td>0</td>
+						<td>
+							<span class="material-icons">edit</span>
+						</td>
+						<td>
+							<span class="material-icons">delete</span>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<input type="checkbox" name="list[]" id="list[]" />
+						</td>
+						<td>
+							<img src="https://via.placeholder.com/640x480.png/002244?text=sunt" alt="picture"></img>
+						</td>
+						<td>
+							<a href="#" [click]="igk.ajx.get('#',null,'');" >Elenora Kiehn</a>
+						</td>
+						<td>Dr.</td>
+						<td>Rerum pariatur est laboriosam occaecati. Vel quaerat ut nisi temporibus maxime corrupti doloribus. Et qui quibusdam nobis laboriosam rerum aut. Aut quia error autem minima harum. Velit adipisci omnis itaque possimus sunt.</td>
+						<td>0</td>
+						<td>
+							<span class="material-icons">edit</span>
+						</td>
+						<td>
+							<span class="material-icons">delete</span>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<input type="checkbox" name="list[]" id="list[]" />
+						</td>
+						<td>
+							<img src="https://via.placeholder.com/640x480.png/00dd22?text=qui" alt="picture"></img>
+						</td>
+						<td>
+							<a href="#" [click]="igk.ajx.get('#',null,'');" >Cathryn Keeling DVM</a>
+						</td>
+						<td>Prof.</td>
+						<td>Ea nam soluta nostrum mollitia sapiente necessitatibus. Nesciunt qui mollitia ex distinctio fugit dolorum nulla. Quidem perspiciatis magni suscipit qui aspernatur rerum molestias. Tempora mollitia quia est quos temporibus velit quibusdam. Praesentium ullam amet similique et quaerat. Ipsum nulla dolor vel molestias. Quia architecto fugiat maxime quas eius a quod.</td>
+						<td>0</td>
+						<td>
+							<span class="material-icons">edit</span>
+						</td>
+						<td>
+							<span class="material-icons">delete</span>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<input type="checkbox" name="list[]" id="list[]" />
+						</td>
+						<td>
+							<img src="https://via.placeholder.com/640x480.png/0066ee?text=facere" alt="picture"></img>
+						</td>
+						<td>
+							<a href="#" [click]="igk.ajx.get('#',null,'');" >Orval Lynch</a>
+						</td>
+						<td>Prof.</td>
+						<td>A ad et ea in et maxime voluptates officia. Provident aut qui perspiciatis molestiae atque. Eos sit repudiandae cum quam temporibus. Facilis in aut quae consequuntur dicta est aut saepe. Cupiditate deleniti nulla quia maxime cum et et mollitia. Sit et porro fuga eveniet magni. Quia quasi et ipsa porro voluptatum culpa a nulla. Laboriosam voluptas sit necessitatibus ut rerum animi quasi quo.</td>
+						<td>0</td>
+						<td>
+							<span class="material-icons">edit</span>
+						</td>
+						<td>
+							<span class="material-icons">delete</span>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<input type="checkbox" name="list[]" id="list[]" />
+						</td>
+						<td>
+							<img src="https://via.placeholder.com/640x480.png/00bbaa?text=id" alt="picture"></img>
+						</td>
+						<td>
+							<a href="#" [click]="igk.ajx.get('#',null,'');" >Prof. Giovanni Rogahn</a>
+						</td>
+						<td>Prof.</td>
+						<td>Architecto dolorum molestiae consequatur molestiae atque fugit consequatur. Quos et quidem dolor delectus eum aut tenetur. Eos optio esse aut dicta quis. Et voluptate modi vel eveniet iure atque. Beatae repellendus deserunt dignissimos molestias a sit quia. Fuga quis sunt ad ad esse. Quisquam harum qui inventore molestiae harum culpa velit. Non eius dolores nostrum aut rem nihil cupiditate. Fuga velit quia explicabo in perferendis dolor qui.</td>
+						<td>0</td>
+						<td>
+							<span class="material-icons">edit</span>
+						</td>
+						<td>
+							<span class="material-icons">delete</span>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<input type="checkbox" name="list[]" id="list[]" />
+						</td>
+						<td>
+							<img src="https://via.placeholder.com/640x480.png/009988?text=rem" alt="picture"></img>
+						</td>
+						<td>
+							<a href="#" [click]="igk.ajx.get('#',null,'');" >Laverna Keebler</a>
+						</td>
+						<td>Prof.</td>
+						<td>Incidunt saepe ea enim esse ut. Eius nihil ea animi qui itaque aut enim. Et voluptas iure eius debitis omnis. Ut adipisci sint dolor molestiae reprehenderit dolorem quo. Enim velit similique quia officia unde et ipsam. Corrupti nisi dolorem aspernatur. Qui ut et harum voluptatem omnis consectetur.</td>
+						<td>0</td>
+						<td>
+							<span class="material-icons">edit</span>
+						</td>
+						<td>
+							<span class="material-icons">delete</span>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<input type="checkbox" name="list[]" id="list[]" />
+						</td>
+						<td>
+							<img src="https://via.placeholder.com/640x480.png/0033ff?text=asperiores" alt="picture"></img>
+						</td>
+						<td>
+							<a href="#" [click]="igk.ajx.get('#',null,'');" >Irma Bode</a>
+						</td>
+						<td>Dr.</td>
+						<td>Sit nisi explicabo error et amet. Adipisci dolores nesciunt quasi ipsam quia dolor. Quo voluptatem error incidunt cupiditate est atque. Ea est cumque porro quia voluptate tempore expedita nesciunt. Mollitia aut ut molestias molestiae vitae quo. Debitis soluta mollitia tempora porro. Id qui quis nam.</td>
+						<td>0</td>
+						<td>
+							<span class="material-icons">edit</span>
+						</td>
+						<td>
+							<span class="material-icons">delete</span>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<input type="checkbox" name="list[]" id="list[]" />
+						</td>
+						<td>
+							<img src="https://via.placeholder.com/640x480.png/000011?text=enim" alt="picture"></img>
+						</td>
+						<td>
+							<a href="#" [click]="igk.ajx.get('#',null,'');" >Fredrick Luettgen</a>
+						</td>
+						<td>Mrs.</td>
+						<td>Ab quo et laborum nobis ea alias ipsam. Sit labore amet impedit. Quia eligendi doloremque quam reprehenderit rerum delectus aliquam. Cumque autem voluptatem rerum perferendis est quis ea.</td>
+						<td>0</td>
+						<td>
+							<span class="material-icons">edit</span>
+						</td>
+						<td>
+							<span class="material-icons">delete</span>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<input type="checkbox" name="list[]" id="list[]" />
+						</td>
+						<td>
+							<img src="https://via.placeholder.com/640x480.png/00eeee?text=perferendis" alt="picture"></img>
+						</td>
+						<td>
+							<a href="#" [click]="igk.ajx.get('#',null,'');" >Prof. Nels McClure DDS</a>
+						</td>
+						<td>Dr.</td>
+						<td>Error in sed qui error laborum hic. Labore officiis laboriosam et sequi sit. Molestias molestiae nam ipsa culpa ea ea a. Magni ex ipsam accusantium consequatur aliquid. Aspernatur iste quia laudantium dolor magni perferendis. Voluptatum blanditiis itaque consequatur.</td>
+						<td>0</td>
+						<td>
+							<span class="material-icons">edit</span>
+						</td>
+						<td>
+							<span class="material-icons">delete</span>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<input type="checkbox" name="list[]" id="list[]" />
+						</td>
+						<td>
+							<img src="https://via.placeholder.com/640x480.png/00ee77?text=nihil" alt="picture"></img>
+						</td>
+						<td>
+							<a href="#" [click]="igk.ajx.get('#',null,'');" >Prof. Brenna Little IV</a>
+						</td>
+						<td>Dr.</td>
+						<td>Maxime ad eum cupiditate deleniti molestiae. Quos beatae ad quaerat necessitatibus qui. Natus est ea tenetur consequuntur non. Similique aut est omnis aut beatae natus.</td>
+						<td>0</td>
+						<td>
+							<span class="material-icons">edit</span>
+						</td>
+						<td>
+							<span class="material-icons">delete</span>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<input type="checkbox" name="list[]" id="list[]" />
+						</td>
+						<td>
+							<img src="https://via.placeholder.com/640x480.png/0077aa?text=aut" alt="picture"></img>
+						</td>
+						<td>
+							<a href="#" [click]="igk.ajx.get('#',null,'');" >Mr. Sigurd Ratke III</a>
+						</td>
+						<td>Dr.</td>
+						<td>Dignissimos sed consequatur nostrum tempore illo. In sunt et saepe expedita. Quos quam ut error inventore repellendus culpa. Ullam necessitatibus dolor possimus magni repellendus cumque et. Magni et ea voluptate. Dignissimos exercitationem nisi reiciendis culpa quis. Assumenda incidunt ullam veniam autem voluptatum porro sunt. Sunt voluptate voluptas voluptate molestias at est incidunt. Dolorem et mollitia non mollitia. Labore enim aliquid et. Dolores praesentium consequuntur distinctio perspiciatis tempora dolorem sint.</td>
+						<td>0</td>
+						<td>
+							<span class="material-icons">edit</span>
+						</td>
+						<td>
+							<span class="material-icons">delete</span>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<input type="checkbox" name="list[]" id="list[]" />
+						</td>
+						<td>
+							<img src="https://via.placeholder.com/640x480.png/0011ee?text=repellat" alt="picture"></img>
+						</td>
+						<td>
+							<a href="#" [click]="igk.ajx.get('#',null,'');" >Prof. Mohammad Zieme MD</a>
+						</td>
+						<td>Prof.</td>
+						<td>Quibusdam dolores rem quia. Ad atque facere ex sapiente quidem repellendus esse. Delectus consequatur qui et quam necessitatibus enim explicabo. Accusamus necessitatibus aspernatur vero tempora excepturi suscipit. Fuga sit beatae illo omnis velit et. Quia esse temporibus et molestiae aut omnis quas.</td>
+						<td>0</td>
+						<td>
+							<span class="material-icons">edit</span>
+						</td>
+						<td>
+							<span class="material-icons">delete</span>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<input type="checkbox" name="list[]" id="list[]" />
+						</td>
+						<td>
+							<img src="https://via.placeholder.com/640x480.png/0022dd?text=voluptatibus" alt="picture"></img>
+						</td>
+						<td>
+							<a href="#" [click]="igk.ajx.get('#',null,'');" >Buck McClure PhD</a>
+						</td>
+						<td>Prof.</td>
+						<td>Corporis cupiditate cupiditate et impedit et. Doloribus ad ratione pariatur totam illo. Id natus voluptatem corrupti omnis. Odio qui sint explicabo consequatur et. Aut quia debitis quia harum sunt. Sint reiciendis exercitationem et tenetur numquam sunt minus. Repudiandae omnis sunt dolores suscipit harum veniam. Mollitia explicabo rem rerum et debitis.</td>
+						<td>0</td>
+						<td>
+							<span class="material-icons">edit</span>
+						</td>
+						<td>
+							<span class="material-icons">delete</span>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<input type="checkbox" name="list[]" id="list[]" />
+						</td>
+						<td>
+							<img src="https://via.placeholder.com/640x480.png/00aabb?text=aliquam" alt="picture"></img>
+						</td>
+						<td>
+							<a href="#" [click]="igk.ajx.get('#',null,'');" >Amari Sawayn</a>
+						</td>
+						<td>Mr.</td>
+						<td>Laborum reprehenderit harum rerum quam aliquid eius. Nihil impedit tempora sit. Veritatis vel quo veniam minus repellendus et. Et sit ipsum ea.</td>
+						<td>0</td>
+						<td>
+							<span class="material-icons">edit</span>
+						</td>
+						<td>
+							<span class="material-icons">delete</span>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<input type="checkbox" name="list[]" id="list[]" />
+						</td>
+						<td>
+							<img src="https://via.placeholder.com/640x480.png/001144?text=velit" alt="picture"></img>
+						</td>
+						<td>
+							<a href="#" [click]="igk.ajx.get('#',null,'');" >Juliet Ernser DDS</a>
+						</td>
+						<td>Dr.</td>
+						<td>Ut molestiae et modi. Quis voluptates iste dolorem tempore sit aut id. Quam asperiores repellat magni consequatur. Qui facere eum harum voluptas. Omnis alias sed optio sequi. Sed quos facilis est repellendus autem. Quia molestiae est omnis possimus.</td>
+						<td>0</td>
+						<td>
+							<span class="material-icons">edit</span>
+						</td>
+						<td>
+							<span class="material-icons">delete</span>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<input type="checkbox" name="list[]" id="list[]" />
+						</td>
+						<td>
+							<img src="https://via.placeholder.com/640x480.png/001111?text=et" alt="picture"></img>
+						</td>
+						<td>
+							<a href="#" [click]="igk.ajx.get('#',null,'');" >Mr. Reyes Rutherford</a>
+						</td>
+						<td>Mr.</td>
+						<td>Vel inventore sed quia itaque. Vel dolor consequatur ipsa corporis. Dolorum facilis laborum facilis itaque vel exercitationem aut. Fugit perferendis unde quo debitis necessitatibus. Ducimus perferendis enim in ea nisi. Dolores in nam officia et atque quia incidunt. Veritatis et et cum ex provident et odio autem.</td>
+						<td>0</td>
+						<td>
+							<span class="material-icons">edit</span>
+						</td>
+						<td>
+							<span class="material-icons">delete</span>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<input type="checkbox" name="list[]" id="list[]" />
+						</td>
+						<td>
+							<img src="https://via.placeholder.com/640x480.png/0033bb?text=dolores" alt="picture"></img>
+						</td>
+						<td>
+							<a href="#" [click]="igk.ajx.get('#',null,'');" >Anika Lemke PhD</a>
+						</td>
+						<td>Dr.</td>
+						<td>Itaque dolorum cum error et eveniet. Doloribus sunt laudantium laboriosam commodi nihil necessitatibus animi. Eum ipsam ut sed id non. Architecto maxime quis qui eveniet. Sit vel suscipit quis tenetur fugit voluptatem. Sint possimus consequatur officiis iure aliquid sit. Sint sed facere doloremque est deleniti et provident ea. Corporis fugit est nostrum est dolorem dolorum fuga itaque. Optio velit ad hic error. Blanditiis expedita aperiam accusantium velit sit.</td>
+						<td>0</td>
+						<td>
+							<span class="material-icons">edit</span>
+						</td>
+						<td>
+							<span class="material-icons">delete</span>
+						</td>
+					</tr>
+				</table>
+			</div>
+		</div>
+	</form>
 </div>

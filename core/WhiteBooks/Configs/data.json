@@ -1,0 +1,129 @@
+{
+    "%prefix%books": {
+        "ColumnInfo": {
+            "book_id": {
+                "clAutoIncrement": true,
+                "clIsPrimary": true,
+                "clName": "book_id",
+                "clNotNull": true,
+                "clType": "Int",
+                "clTypeLength": 11
+            },
+            "book_name": {
+                "clDescription": "book name",
+                "clIsUnique": true,
+                "clName": "book_name",
+                "clType": "VARCHAR",
+                "clTypeLength": "30"
+            },
+            "book_title": {
+                "clName": "book_title",
+                "clType": "VARCHAR",
+                "clTypeLength": "60"
+            },
+            "book_desc": {
+                "clName": "book_desc",
+                "clType": "Text"
+            },
+            "book_download": {
+                "clName": "book_download",
+                "clType": "Int",
+                "clTypeLength": 11
+            },
+            "book_picture": {
+                "clName": "book_picture",
+                "clType": "VARCHAR",
+                "clTypeLength": "255"
+            },
+            "book_mimetype": {
+                "clDefault": "plain\/text",
+                "clName": "book_mimetype",
+                "clType": "VARCHAR",
+                "clTypeLength": "60"
+            },
+            "book_path": {
+                "clName": "book_path",
+                "clType": "Text"
+            },
+            "book_author_id": {
+                "clLinkColumn": "ID",
+                "clLinkType": "%sysprefix%users",
+                "clName": "book_author_id",
+                "clType": "UBigInt",
+                "clTypeLength": 11
+            },
+            "book_desc_post_id": {
+                "clLinkColumn": "ID",
+                "clLinkType": "%sysprefix%posts",
+                "clName": "book_desc_post_id",
+                "clType": "UBigInt",
+                "clTypeLength": 11
+            },
+            "book_createat": {
+                "clInsertFunction": "Now()",
+                "clName": "book_createat",
+                "clNotNull": true,
+                "clType": "DateTime"
+            },
+            "book_updateat": {
+                "clInsertFunction": "Now()",
+                "clName": "book_updateat",
+                "clNotNull": true,
+                "clType": "DateTime",
+                "clUpdateFunction": "Now()"
+            }
+        },
+        "Description": "white books"
+    },
+    "%prefix%book_clients": {
+        "ColumnInfo": {
+            "bookclients_id": {
+                "clAutoIncrement": true,
+                "clIsPrimary": true,
+                "clName": "bookclients_id",
+                "clNotNull": true,
+                "clType": "Int",
+                "clTypeLength": 11
+            },
+            "bookclients_firstname": {
+                "clName": "bookclients_firstname",
+                "clType": "VARCHAR",
+                "clTypeLength": "60"
+            },
+            "bookclients_lastname": {
+                "clName": "bookclients_lastname",
+                "clType": "VARCHAR",
+                "clTypeLength": "80"
+            },
+            "bookclients_email": {
+                "clIsUnique": true,
+                "clName": "bookclients_email",
+                "clType": "VARCHAR",
+                "clTypeLength": "100"
+            },
+            "bookclients_info": {
+                "clIsUnique": true,
+                "clName": "bookclients_info",
+                "clType": "JSON"
+            },
+            "bookclients_desc": {
+                "clName": "bookclients_desc",
+                "clType": "Text"
+            },
+            "bookclients_create_at": {
+                "clInsertFunction": "Now()",
+                "clName": "bookclients_create_at",
+                "clNotNull": true,
+                "clType": "DateTime"
+            },
+            "bookclients_update_at": {
+                "clInsertFunction": "Now()",
+                "clName": "bookclients_update_at",
+                "clNotNull": true,
+                "clType": "DateTime",
+                "clUpdateFunction": "Now()"
+            }
+        },
+        "Description": "download client info"
+    }
+}

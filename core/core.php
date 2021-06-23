@@ -12,6 +12,8 @@ define("ILM_BASE_DIR", dirname(__DIR__));
 define("ILM_WHITE_BOOK_DIR", __DIR__."/WhiteBooks");
 define("ILM_VERSION", "1.0");
 
+
+
 /**
  * 
  * @return mixed 
@@ -279,4 +281,17 @@ function ilm_html_uri($u){
 
 function ilm_server(){
     return ILYEUM\Server::getInstance();
+}
+
+if (!function_exists('form_input_type')){
+    function form_input_type($type){
+        static $requireInput;
+        if ($requireInput===null){
+            $requireInput  = explode("|", "text|email|password");
+        } 
+        if (in_array($type, $requireInput)){ 
+            return $type;
+        }
+        return "text";
+    }
 }
